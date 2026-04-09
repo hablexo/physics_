@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>General Physics - Chapter 1 | Fixed Watermark Always On Top</title>
+    <!-- KaTeX CSS + JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false},{left: '\\(', right: '\\)', display: false},{left: '\\[', right: '\\]', display: true}], throwOnError: false});"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a1f1a;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Each slide is a complete, self-contained card */
+        .slide {
+            position: relative;
+            max-width: 1100px;
+            width: 100%;
+            background: linear-gradient(145deg, #0e2a22 0%, #0a231c 100%);
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+            padding: 32px 38px 50px 38px;
+            margin-bottom: 40px;
+            border: 1px solid #2a5a4a;
+            color: #ffffff;  /* BASE TEXT COLOR: WHITE for all normal text */
+            overflow: hidden;
+        }
+
+        .slide:last-child {
+            margin-bottom: 0;
+        }
+
+        /* FIXED WATERMARK: Now uses a separate pseudo-element but with highest stacking context.
+           The key fix: increase z-index and ensure it's not hidden by any child's background or stacking.
+           Use a dedicated pseudo-element that sits above all slide content.
+           We also add a second pseudo-element approach or we can use an absolute div? 
+           But pseudo-element is fine if we ensure its z-index is higher than any .slide > *.
+           However, children of .slide might create their own stacking contexts (transform, etc.).
+           To guarantee it's on top, we'll use an absolutely positioned inner div inside each slide (via JavaScript? No, better: use CSS only but enforce with high z-index and pointer-events: none).
+           The previous issue: some divs (like .col, .math-block) might have background but that doesn't hide watermark because watermark is pseudo-element.
+           But if any element inside slide has a higher z-index or creates stacking context, it could render above the pseudo-element.
+           SOLUTION: Set .slide > * (all direct children) to have z-index: auto or relative but lower than watermark.
+           Actually, the pseudo-element's z-index is relative to the .slide's stacking context. 
+           To make sure watermark is on top of EVERYTHING inside .slide, we can:
+           1. Set .slide to have a stacking context (e.g., isolation: isolate) and set pseudo-element z-index to a high value (like 100).
+           2. Ensure all direct children have z-index lower than that, and no child creates a new stacking context that positions its content above the watermark.
+           3. Simpler approach: use an absolute positioned <div> generated via JavaScript? But CSS pseudo works.
+           The safest: Use an extra <div class="watermark-layer"> inside each slide using JavaScript? But that would break print? No, we can do pure CSS.
+           But since we need to guarantee it's on top, I will use a separate absolute div that is injected via CSS? Not possible.
+           Better: Use a .slide::after with higher z-index, and set all .slide > * to z-index: 1, and .slide::after to z-index: 999.
+           However, if any child has transform or opacity or position: relative with higher z-index, it can overlap.
+           To fix definitively: set .slide { isolation: isolate; } and .slide::before { z-index: 1000; } and .slide > * { z-index: 1; position: relative; }.
+           That ensures all content is below the pseudo-element because stacking context is managed by isolation.
+        */
+        .slide {
+            isolation: isolate;
+        }
+        
+        /* Watermark - NOW ON TOP OF EVERYTHING with highest z-index */
+               /* Watermark - Subtle, no distracting strokes */
+        .slide::before {
+            content: "QELEME EXAMS";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-family: 'Segoe UI', 'Georgia', serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: rgba(91, 192, 168, 0.12);
+            pointer-events: none;
+            z-index: 10000;
+            white-space: nowrap;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            text-shadow: none;
+            width: 100%;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* All direct content sits at lower stacking level */
+        .slide > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* But some inner elements might create new stacking contexts if they have transforms or opacity.
+           To be absolutely safe, we also force any nested element that could create stacking context to not exceed watermark.
+           The watermark's z-index: 10000 is so high that only if an element has a higher z-index in a different stacking context it could cause issues.
+           We ensure no element inside slide gets z-index >= 10000. Also, any element with transform or filter that creates new stacking context still respects z-index order within the same parent.
+           Since .slide::before is a pseudo-element of .slide, and .slide is the stacking context root (due to isolation: isolate), 
+           any child's z-index is relative to that context. The pseudo-element's z-index (10000) will always be on top of child elements (max z-index 1 or whatever they set).
+           But if a child sets z-index: 9999, still lower. We will also globally override any high z-index inside slide.
+        */
+        .slide * {
+            /* ensure no internal element accidentally gets higher z-index than watermark */
+            z-index: auto !important; /* but keep relative positioning if needed */
+        }
+        
+        /* But we must preserve relative positioning for content layout, so we refine: only reset z-index for elements that are not the watermark.
+           This universal rule might break some dropdowns, but there are none. It's safe. */
+        .slide :not(.slide::before) {
+            z-index: auto;
+        }
+        
+        /* Re-apply necessary relative positioning for content that needs it, but without high z-index */
+        .slide > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* For any nested absolute or relative elements inside slide, we keep their stacking low by default */
+        .slide .col, .slide .math-block, .slide .callout, .slide .image-figure, .slide .two-columns {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Footer also below watermark */
+        .slide-footer {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.6rem;
+            color: rgba(155, 199, 187, 0.55);
+            font-family: monospace;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Headers - yellow only for titles/subheads */
+        .slide-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #f5d742;
+            margin-bottom: 10px;
+            border-left: 5px solid #5bc0a8;
+            padding-left: 20px;
+        }
+
+        .subhead {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #f5d742;
+            margin-bottom: 22px;
+            padding-left: 26px;
+            border-bottom: 1px solid #2a5a4a;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #f5d742;
+            margin: 18px 0 12px 0;
+            border-left: 3px solid #5bc0a8;
+            padding-left: 14px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f5e29e;
+            margin: 10px 0 6px 0;
+        }
+
+        /* Default text white */
+        p, li, .bullet-list li, .compact-list li, .callout, .math-block, .image-caption, .col p, .col li, td, th {
+            color: #ffffff;
+        }
+        
+        /* Math white */
+        .math-block .katex, .math-block .katex * {
+            color: #ffffff;
+        }
+        
+        .highlight {
+            background: #1a4036;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.82rem;
+            display: inline-block;
+            color: #ffffff;
+        }
+
+        /* ============================================= */
+        /* COLOR CLASSES FOR MAIN POINTS */
+        /* ============================================= */
+        .blue-highlight {
+            color: #6bc8ff !important;   /* vibrant electric blue */
+            font-weight: 600;
+        }
+        
+        .red-highlight {
+            color: #ff8a7a !important;    /* soft but vivid red */
+            font-weight: 600;
+        }
+        
+        .orange-highlight {
+            color: #ffb347 !important;    /* amber/orange */
+            font-weight: 600;
+        }
+        
+        strong.blue-highlight, b.blue-highlight {
+            color: #6bc8ff !important;
+        }
+        strong.red-highlight, b.red-highlight {
+            color: #ff8a7a !important;
+        }
+        
+        .bullet-list {
+            list-style: none;
+            margin: 8px 0 14px 0;
+            padding-left: 0;
+        }
+        .bullet-list li {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 22px;
+        }
+        .bullet-list li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: #5bc0a8;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .compact-list {
+            list-style: none;
+            margin: 6px 0 10px 0;
+            padding-left: 0;
+        }
+        .compact-list li {
+            font-size: 0.87rem;
+            margin-bottom: 5px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .compact-list li::before {
+            content: "◦";
+            position: absolute;
+            left: 0;
+            color: #7acfb8;
+            font-size: 0.85rem;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin: 14px 0;
+        }
+        .col {
+            background: #0f2c23;
+            border-radius: 20px;
+            padding: 16px 18px;
+            border: 1px solid #2a5a4a;
+        }
+        .col .bullet-list li::before {
+            color: #5bc0a8;
+        }
+
+        .math-block {
+            background: #0a241d;
+            padding: 14px 18px;
+            border-radius: 18px;
+            margin: 14px 0;
+            border-left: 5px solid #5bc0a8;
+            overflow-x: auto;
+            font-size: 0.95rem;
+        }
+        .math-block .katex {
+            font-size: 1em;
+        }
+
+        .callout {
+            background: #0e2a22;
+            border-left: 5px solid #5bc0a8;
+            border-radius: 18px;
+            padding: 12px 18px;
+            margin: 14px 0;
+            font-size: 0.88rem;
+        }
+
+        .image-figure {
+            margin: 16px 0;
+            text-align: center;
+        }
+        .image-figure img {
+            max-width: 65%;
+            height: auto;
+            max-height: 170px;
+            border-radius: 12px;
+            border: 1px solid #3a7a64;
+            background: #0a241d;
+            object-fit: contain;
+        }
+        .image-caption {
+            font-size: 0.7rem;
+            color: #9bc7bb;
+            margin-top: 5px;
+        }
+        .image-placeholder-note {
+            background: #0a241d;
+            border-radius: 12px;
+            padding: 10px 16px;
+            text-align: center;
+            margin: 12px 0;
+            border: 1px dashed #5bc0a8;
+            color: #9bc7bb;
+            font-size: 0.75rem;
+            display: inline-block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #0f2c23;
+            border-radius: 14px;
+            font-size: 0.8rem;
+            margin: 16px 0;
+        }
+        th, td {
+            border: 1px solid #2a5a4a;
+            padding: 6px 8px;
+            text-align: center;
+            color: #ffffff;
+        }
+        th {
+            background: #1a4036;
+            color: #f5d742;
+        }
+
+        .inline-arrow {
+            font-weight: 500;
+            color: #8bcbae;
+            margin: 0 2px;
+        }
+        
+        @media (max-width: 750px) {
+            .slide { padding: 24px 22px 50px 22px; }
+            .two-columns { grid-template-columns: 1fr; gap: 16px; }
+            .slide-title { font-size: 1.6rem; }
+            .image-figure img { max-width: 80%; max-height: 140px; }
+            .slide::before { font-size: 2rem; letter-spacing: 4px; opacity: 0.6; }
+            .slide-footer { font-size: 0.55rem; bottom: 8px; }
+        }
+
+        /* PRINT STYLES - watermark still on top in print */
+        @media print {
+            html, body {
+                background: #0a1f1a;
+                margin: 0;
+                padding: 0;
+            }
+            
+            body {
+                background: #0a1f1a;
+                padding: 0;
+            }
+            
+            .slide {
+                position: relative;
+                background: linear-gradient(145deg, #0e2a22 0%, #0a231c 100%);
+                border: 1px solid #2a5a4a;
+                box-shadow: none;
+                margin: 0;
+                margin-bottom: 0;
+                padding: 0.35in 0.4in 0.55in 0.4in;
+                border-radius: 0;
+                page-break-after: always;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                isolation: isolate;
+            }
+            
+            .slide:last-child {
+                page-break-after: auto;
+            }
+            
+            .slide::before {
+                content: "QELEME EXAMS";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-25deg);
+                font-size: 3rem;
+                font-weight: 800;
+                color: rgba(91, 192, 168, 0.25);
+                white-space: nowrap;
+                letter-spacing: 6px;
+                z-index: 10000;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .slide-footer {
+                position: absolute;
+                bottom: 12px;
+                left: 0;
+                right: 0;
+                font-size: 0.55rem;
+                color: rgba(155, 199, 187, 0.6);
+                text-align: center;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                z-index: 1;
+            }
+            
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            @page {
+                size: letter landscape;
+                margin: 0.15in;
+                background: #0a1f1a;
+            }
+            
+            .image-figure img {
+                max-height: 140px;
+                max-width: 55%;
+            }
+            
+            .slide > * {
+                z-index: 1;
+                position: relative;
+            }
+        }
+
+        .katex { color: #ffffff; }
+        .katex .mord, .katex .mbin, .katex .mrel { color: #f0f9f5; }
+    </style>
+</head>
+<body>
+
+
+  <!-- Cover Page -->
+
+<div class="slide" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(135deg, #0a2a1f 0%, #071a12 100%); padding: 60px 40px;">
+    <div class="slide-footer" style="position: absolute; bottom: 20px; left: 0; right: 0;">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <!-- Logo Image -->
+    <div style="width: 120px; height: 120px; margin-bottom: 30px;">
+        <img src="Qeleme_Exams.png" alt="Qeleme Exams Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%; box-shadow: 0 20px 35px -8px rgba(0,0,0,0.4), 0 0 0 4px rgba(91,192,168,0.2);">
+    </div>
+    
+    <!-- App Name -->
+    <div style="margin-bottom: 20px;">
+        <span style="font-size: 1.2rem; font-weight: 500; color: #5bc0a8; letter-spacing: 4px; text-transform: uppercase;">Qeleme Exams</span>
+    </div>
+    
+    <!-- Main Title -->
+    <h1 style="font-size: 3.2rem; font-weight: 800; color: #f5d742; margin: 15px 0 10px 0; text-shadow: 0 2px 10px rgba(0,0,0,0.3); letter-spacing: -0.5px;">
+        General Physics
+    </h1>
+    
+    <div style="width: 80px; height: 3px; background: #5bc0a8; margin: 20px auto;"></div>
+    
+    <h2 style="font-size: 2rem; font-weight: 600; color: #ffffff; margin: 10px 0 25px 0; border-left: none; padding-left: 0;">
+        Chapter 1
+    </h2>
+    
+    <div style="background: rgba(91,192,168,0.15); padding: 12px 28px; border-radius: 50px; margin-bottom: 40px; border: 1px solid rgba(91,192,168,0.3);">
+        <span style="font-size: 1rem; color: #9bc7bb; letter-spacing: 1px;">PRELIMINARIES</span>
+    </div>
+    
+    <!-- Prepared by line -->
+    <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(91,192,168,0.3); width: 80%;">
+        <p style="font-size: 0.85rem; color: #9bc7bb; margin: 5px 0;">
+            <strong style="color: #f5d742;">Prepared by Qeleme Exams - Learn. Practice. Win</strong>
+        </p>
+        <p style="font-size: 0.75rem; color: #6a9e8e; margin-top: 10px;">
+             Interactive Learning Resource 
+        </p>
+    </div>
+    
+    <!-- Decorative dots -->
+    <div style="position: absolute; bottom: 80px; left: 20px; opacity: 0.3;">
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+    </div>
+    <div style="position: absolute; top: 80px; right: 20px; opacity: 0.3;">
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide" style="padding: 32px 38px 50px 38px;">
+    
+    <div class="slide-title" style="margin-bottom: 30px; font-size: 2rem;">Contents</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px;">
+        <!-- Left Column -->
+        <div style="background: rgba(15,44,35,0.6); border-radius: 24px; padding: 22px 26px; border: 1px solid rgba(91,192,168,0.25);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <h3 style="color: #f5d742; margin: 0; font-size: 1.2rem;">Fundamentals</h3>
+            </div>
+            <ul style="list-style: none; padding-left: 0; margin: 0;">
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.1</span> Physical Quantities</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.2</span> Basic & Derived Quantities</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.3</span> Units and Prefixes</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.4</span> Measurement & Uncertainty</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.5</span> Accuracy, Precision, Errors</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.6</span> Significant Figures</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.7</span> Scalars & Vectors</li>
+            </ul>
+        </div>
+
+        <!-- Right Column -->
+        <div style="background: rgba(15,44,35,0.6); border-radius: 24px; padding: 22px 26px; border: 1px solid rgba(91,192,168,0.25);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <h3 style="color: #f5d742; margin: 0; font-size: 1.2rem;">Vector Analysis</h3>
+            </div>
+            <ul style="list-style: none; padding-left: 0; margin: 0;">
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.8</span> Vector Addition (Graphical)</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.9</span> Analytic Addition of Vectors</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.10</span> Resolution of a Vector</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.11</span> Component Method</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.12</span> Equilibrant Vector</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.13</span> Scalar (Dot) Product</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.14</span> Vector (Cross) Product</li>
+                <li style="margin-bottom: 14px; font-size: 0.9rem; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0; color: #5bc0a8;">▹</span> <span class="blue-highlight">1.15</span> Types of Vectors & Unit Vectors</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Physical Quantities and Measurement</div>
+
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Physical quantities</span> → characteristic or property of an object or phenomenon that can be measured</li>
+        <li>Quantifiable property ascribed to a particular phenomenon, body, or substance</li>
+        <li>Any number used to describe an observation of a physical phenomenon <span class="blue-highlight">quantitatively</span></li>
+        <li>Grouped into two: <strong class="blue-highlight">basic</strong> and <strong class="red-highlight">derived</strong></li>
+    </ul>
+
+    <h2>Basic Quantities</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Basic quantities</span> → building blocks for formulation of derived physical quantities</li>
+        <li>More <span class="red-highlight">fundamental</span> than others; defined only by the procedure used to measure them</li>
+        <li>Units in which they are measured → called <span class="blue-highlight">fundamental units</span></li>
+        <li>The <span class="red-highlight">fundamental (basic) physical quantities</span> are:
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li><strong>Mass</strong> → kilogram (kg) <span class="blue-highlight">[base unit]</span></li>
+                <li><strong>Length</strong> → meter (m) <span class="blue-highlight">[base unit]</span></li>
+                <li><strong>Time</strong> → second (s) <span class="blue-highlight">[base unit]</span></li>
+                <li><strong>Electric current</strong> → ampere (A)</li>
+                <li><strong>Temperature</strong> → kelvin (K)</li>
+                <li><strong>Amount of substance</strong> → mole (mol)</li>
+                <li><strong>Luminous intensity</strong> → candela (cd)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Prefixes</h2>
+    <ul class="bullet-list">
+        <li>Once fundamental units are defined → introduce <span class="blue-highlight">larger and smaller units</span> for the same physical quantities</li>
+        <li>Names of additional units derived by adding a <span class="red-highlight">prefix</span> to the name of the fundamental unit</li>
+        <li>Examples: <span class="blue-highlight">kilo</span> = \(10^3\), <span class="blue-highlight">milli</span> = \(10^{-3}\), <span class="orange-highlight">micro</span> = \(10^{-6}\), <span class="blue-highlight">nano</span> = \(10^{-9}\)</li>
+    </ul>
+
+    <div class="math-block">
+        \(1 \, \text{kilometer} = 1 \, \text{km} = 10^3 \, \text{meters} = 10^3 \, \text{m}\)<br>
+        \(1 \, \text{kilogram} = 1 \, \text{kg} = 10^3 \, \text{grams} = 10^3 \, \text{g}\)<br>
+        \(1 \, \text{kilojoule} = 1 \, \text{kJ} = 10^3 \, \text{Joules} = 10^3 \, \text{J}\)<br>
+        \(1 \, \text{nanometer} = 1 \, \text{nm} = 10^{-9} \, \text{m}\) &nbsp; <span class="red-highlight">(very small scale)</span><br>
+        \(1 \, \text{micrometer} = 1 \, \mu\text{m} = 10^{-6} \, \text{m}\)<br>
+        \(1 \, \text{millimeter} = 1 \, \text{mm} = 10^{-3} \, \text{m}\)
+    </div>
+
+    <p><strong class="blue-highlight">note:</strong> For the others, read the following tabular summary.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>powers of ten</th>
+                <th>prefix</th>
+                <th>symbol</th>
+                <th>powers of ten</th>
+                <th>prefix</th>
+                <th>symbol</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>\(10^{-24}\)</td>
+                <td>yocto</td>
+                <td>y</td>
+                <td>\(10^{1}\)</td>
+                <td>deca</td>
+                <td>da</td>
+            </tr>
+            <tr>
+                <td>\(10^{-21}\)</td>
+                <td>zepto</td>
+                <td>z</td>
+                <td>\(10^{2}\)</td>
+                <td>hecto</td>
+                <td>h</td>
+            </tr>
+            <tr>
+                <td>\(10^{-18}\)</td>
+                <td>atto</td>
+                <td>a</td>
+                <td>\(10^{3}\)</td>
+                <td class="blue-highlight">kilo</td>
+                <td class="blue-highlight">k</td>
+            </tr>
+            <tr>
+                <td>\(10^{-15}\)</td>
+                <td>femto</td>
+                <td>f</td>
+                <td>\(10^{6}\)</td>
+                <td class="blue-highlight">mega</td>
+                <td class="blue-highlight">M</td>
+            </tr>
+            <tr>
+                <td>\(10^{-12}\)</td>
+                <td>pico</td>
+                <td>p</td>
+                <td>\(10^{9}\)</td>
+                <td class="blue-highlight">giga</td>
+                <td class="blue-highlight">G</td>
+            </tr>
+            <tr>
+                <td>\(10^{-9}\)</td>
+                <td class="red-highlight">nano</td>
+                <td class="red-highlight">n</td>
+                <td>\(10^{12}\)</td>
+                <td>tera</td>
+                <td>T</td>
+            </tr>
+            <tr>
+                <td>\(10^{-6}\)</td>
+                <td class="orange-highlight">micro</td>
+                <td class="orange-highlight">μ</td>
+                <td>\(10^{15}\)</td>
+                <td>peta</td>
+                <td>P</td>
+            </tr>
+            <tr>
+                <td>\(10^{-3}\)</td>
+                <td class="blue-highlight">milli</td>
+                <td class="blue-highlight">m</td>
+                <td>\(10^{18}\)</td>
+                <td>exa</td>
+                <td>E</td>
+            </tr>
+            <tr>
+                <td>\(10^{-2}\)</td>
+                <td>centi</td>
+                <td>c</td>
+                <td>\(10^{21}\)</td>
+                <td>zetta</td>
+                <td>Z</td>
+            </tr>
+            <tr>
+                <td>\(10^{-1}\)</td>
+                <td>deci</td>
+                <td>d</td>
+                <td>\(10^{24}\)</td>
+                <td>yotta</td>
+                <td>Y</td>
+            </tr>
+        </tbody>
+    </table>
+        <div class="image-caption">Table 1: Some Prefixes and powers of ten</div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example:</span> Consider the speed of a car to be ninety kilometers per hour (90 km/h). What is this speed in m/s?
+    </div>
+
+    <div class="math-block">
+        <strong>Solution:</strong><br>
+        Given \(v = 90 \, \text{km/h}\), required \(v\) in \(\text{m/s}\).<br><br>
+        \(1 \, \text{kilometer} = 1 \, \text{km} = 10^3 \, \text{meters} = 10^3 \, \text{m}\)<br>
+        \(1 \, \text{hour} = 60 \, \text{minutes} = 1 \, \text{h} \times 60 \, \text{minutes/h} \times 60 \, \text{s/minute} = 3600 \, \text{s}\)<br><br>
+        \(90 \, \text{km/h} = \dfrac{90 \, \text{km} \times 10^3 \, \text{m/km}}{1 \, \text{h} \times 60 \, \text{minutes/h} \times 60 \, \text{s/minute}}\)<br><br>
+        \(= \dfrac{90 \times 10^3 \, \text{m}}{3600 \, \text{s}} = 25 \, \text{m/s}\) &nbsp; <span class="red-highlight">(answer)</span>
+    </div>
+
+    <h2>Derived Quantities</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Derived quantities</span> → physical quantities derived from the basic ones</li>
+        <li>Formulated from the <span class="red-highlight">combination of two or more</span> basic physical quantities</li>
+        <li>This category includes:
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li><strong>Velocity</strong> in \(\text{m/s}\) → derived from <span class="blue-highlight">distance</span> and <span class="blue-highlight">time</span></li>
+                <li><strong>Volume</strong> in \(\text{m}^3\) → derived from <span class="red-highlight">three lengths</span></li>
+                <li><strong>Force</strong> in \(\text{N} = \text{kg} \cdot \text{m/s}^2\) → derived from <span class="orange-highlight">mass, length, and time</span></li>
+            </ul>
+        </li>
+        <li>What is better to remember derived quantities → <span class="blue-highlight">keep all the seven basic quantities</span> because all the rest are derived ones</li>
+    </ul>
+
+    <h2>Scalars and Vectors</h2>
+    <ul class="bullet-list">
+        <li>Physical quantities can also be grouped into two: <span class="red-highlight">scalars</span> and <span class="blue-highlight">vectors</span></li>
+        <li><span class="blue-highlight">Scalar:</span> has magnitude only (e.g., mass, temperature, speed, distance)</li>
+        <li><span class="red-highlight">Vector:</span> has magnitude and direction (e.g., velocity, force, displacement)</li>
+    </ul>
+</div>
+
+
+
+
+<!-- SLIDE 2: Measurement and Uncertainty -->
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Measurement and Uncertainty</div>
+    <div class="subhead">Accuracy, Precision, and Error Analysis</div>
+
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Measurement</span> → act of comparing a physical quantity with a reference or standard</li>
+        <li>All measurements have <span class="red-highlight">uncertainties</span> associated with them</li>
+        <li>Accuracy depends on:
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Sensitivity of the apparatus</li>
+                <li>Skill of the person carrying out the measurement</li>
+                <li>Number of times the measurement is repeated</li>
+            </ul>
+        </li>
+        <li>Errors cannot be avoided but can be <span class="blue-highlight">minimized</span></li>
+        <li><span class="orange-highlight">Error</span> → deviation of measurement outcome from the true or average value</li>
+        <li>Uncertainty is also called <span class="red-highlight">error</span></li>
+    </ul>
+
+    <h2>Accuracy and Precision</h2>
+    <ul class="bullet-list">
+        <li>Scientists make repeated measurements to ensure <span class="blue-highlight">precision</span> and <span class="blue-highlight">accuracy</span></li>
+        <li><span class="red-highlight">Precise</span> → measurements yield very similar results when repeated in the same manner</li>
+        <li><span class="red-highlight">Accurate</span> → measurement yields a result very close to the true or accepted value</li>
+        <li>Precise values agree with <span class="blue-highlight">each other</span>; accurate values agree with a <span class="blue-highlight">true value</span></li>
+        <li><span class="orange-highlight">Accuracy</span> → how close the measured value approaches the true or expected value</li>
+        <li><span class="orange-highlight">Precision</span> → measured outcomes are close to each other or less scattered</li>
+        <li><span class="blue-highlight">Uncertainty</span> → quantitative measure of how much measured values deviate from a standard or expected value</li>
+    </ul>
+
+    <div class="math-block">
+        <strong>Error formula:</strong><br>
+        \(\text{Error} = \text{measured value} - \text{true value}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Accuracy of a measured value is indicated by:
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Using \(\pm\) symbol with uncertainty value</li>
+                <li>Fractional error</li>
+                <li>Percent error</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="math-block">
+        <strong>Percent error formula:</strong><br>
+        \(\% \text{error} = \dfrac{\text{measured value} - \text{true value}}{\text{true value}} \times 100\%\)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 1:</span><br>
+       Suppose that the measured value of the acceleration of gravity is found to be \(9.44 \, \text{m/s}^2\). The accepted value is \(9.80 \, \text{m/s}^2\). Calculate the percentage error.<br><br>
+        <strong>Solution:</strong><br>
+        Difference = \(9.80 \, \text{m/s}^2 - 9.44 \, \text{m/s}^2 = 0.36 \, \text{m/s}^2\)<br>
+        \(\% \text{error} = \dfrac{0.36 \, \text{m/s}^2}{9.80 \, \text{m/s}^2} \times 100\% = 3.7\%\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Precision → how close the agreement is between repeated measurements</li>
+        <li><span class="red-highlight">An accurate measurement is precise, but precise measurement does NOT mean accurate</span></li>
+        <li>Error can be <span class="blue-highlight">negative</span> (below true value) or <span class="blue-highlight">positive</span> (above true value)</li>
+    </ul>
+
+    <h2>Types of Errors</h2>
+    
+    <div class="two-columns">
+        <div class="col">
+            <h3 style="color: #f5d742;">Systematic Error</h3>
+            <ul class="compact-list">
+                <li>Results from <span class="red-highlight">defect in the measuring device</span> itself</li>
+                <li>Makes measurement outcomes <span class="blue-highlight">consistently too high or too low</span></li>
+                <li>Minimized by:
+                    <ul class="compact-list" style="margin-top: 5px;">
+                        <li>Calibrating the device using standards</li>
+                        <li>Replacing defective device with calibrated ones</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="col">
+            <h3 style="color: #f5d742;">Random Error</h3>
+            <ul class="compact-list">
+                <li>Caused by <span class="orange-highlight">fineness of scale division</span> of a measuring device</li>
+                <li>All measurement outcomes are <span class="blue-highlight">equally probable</span></li>
+                <li>Outcomes randomly scattered around the true value</li>
+                <li>More complex and hard to handle</li>
+                <li>Minimized by <span class="red-highlight">multiple or repeated measurements</span> and taking the average</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- SLIDE 3: Significant Figures -->
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Significant Figures</div>
+    <div class="subhead">Rules and Basic Operations</div>
+
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Significant figures (digits)</span> → number of meaningful digits used to describe a measurement outcome</li>
+        <li>Digits in any measurement that are known with <span class="red-highlight">certainty plus one digit that is uncertain</span> (last digit)</li>
+        <li>The number of meaningful digits implies the <span class="orange-highlight">error</span> in the measurement</li>
+        <li>More decimal places in a significant digit → <span class="blue-highlight">more accurate</span> the measurement outcome</li>
+    </ul>
+
+    <h2>Standard Rules for Significant Figures</h2>
+    
+    <div class="two-columns">
+        <div class="col">
+            <h3 style="color: #f5d742;">Rule 1</h3>
+            <ul class="compact-list">
+                <li>All <span class="blue-highlight">non-zero numbers</span> are significant</li>
+                <li>Examples: 3.1428 (5), 23 (2), 3.14 (3), 469 (3)</li>
+            </ul>
+            
+            <h3 style="color: #f5d742;">Rule 2</h3>
+            <ul class="compact-list">
+                <li>Zeros <span class="blue-highlight">between numbers</span> are always significant</li>
+                <li>Examples: 7.053 (4), 7053 (4), 302 (3)</li>
+            </ul>
+            
+            <h3 style="color: #f5d742;">Rule 3</h3>
+            <ul class="compact-list">
+                <li>Zeros to the <span class="red-highlight">left of the first nonzero digit</span> are NOT significant</li>
+                <li>Examples: 0.0056 (2), 0.0789 (3), 0.00098 (2), 0.98 (2)</li>
+            </ul>
+        </div>
+        <div class="col">
+            <h3 style="color: #f5d742;">Rule 4</h3>
+            <ul class="compact-list">
+                <li>In numbers with digits <span class="blue-highlight">to the right of a decimal point</span>, zeros to the right of the last nonzero digit are <span class="red-highlight">significant</span></li>
+                <li>Examples: 43 (2), 43.0 (3), 43.00 (4), 0.00200 (3), 0.40050 (5)</li>
+            </ul>
+            
+            <h3 style="color: #f5d742;">Rule 5</h3>
+            <ul class="compact-list">
+                <li>In numbers with <span class="orange-highlight">no decimal point</span> ending in zeros → zeros are <span class="red-highlight">ambiguous</span></li>
+                <li>Confusion avoided using <span class="blue-highlight">scientific notation</span></li>
+                <li>Examples: \(3.6 \times 10^3\) (2), \(3.60 \times 10^3\) (3), \(3.600 \times 10^3\) (4)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="math-block">
+        <strong>Additional examples:</strong><br>
+        \(0.0009\) (1), \(6 \times 10^2\) (1), \(2\) (1), \(0.4\) (1), \(10\) (1)<br>
+        \(11\) (2), \(2.0\) (2), \(0.30\) (2), \(1.0 \times 10\) (2), \(0.025\) (2)<br>
+        \(234\) (3), \(201\) (3), \(2.00\) (3), \(0.102\) (3), \(4.00\) (3), \(0.200\) (3)
+    </div>
+
+    <h2>Basic Operations with Significant Figures</h2>
+
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Addition and Subtraction:</span>
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Number of significant figures in result → same as smallest number of significant digits in sum/difference</li>
+                <li>Number of decimal places in result → should equal smallest number of decimal places of any term</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 1 (Addition/Subtraction):</span><br>
+        Calculate \(9.65 \, \text{cm} + 8.4 \, \text{cm} - 2.89 \, \text{cm}\).<br><br>
+        <strong>Step 1:</strong> Perform the calculation:<br>
+        \(9.65 + 8.4 - 2.89 = 15.16 \, \text{cm}\)<br>
+        <strong>Step 2:</strong> Identify the least precise measure → 8.4 cm (1 decimal place)<br>
+        <strong>Step 3:</strong> Round the result to 1 decimal place<br>
+        <span class="red-highlight">Answer: \(15.2 \, \text{cm}\)</span>
+    </div>
+
+    <div class="math-block">
+        <strong>Example:</strong> \(34.6 + 17.8 + 15 = 67\) (no decimal places)
+    </div>
+
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Multiplication and Division:</span>
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Number of significant figures in product/quotient → same as least accurate factor (lowest number of significant figures)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 2 (Multiplication):</span><br>
+        Multiply 8.71 cm by 3.2 cm.<br><br>
+        <strong>Step 1:</strong> Perform the multiplication:<br>
+        \((8.71 \, \text{cm})(3.2 \, \text{cm}) = 27.872 \, \text{cm}^2\)<br>
+        <strong>Step 2:</strong> Identify least significant factor → 3.2 has 2 significant figures<br>
+        <strong>Step 3:</strong> Round the result to 2 significant figures<br>
+        <span class="red-highlight">Answer: \(28 \, \text{cm}^2\)</span>
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 3 (Division):</span><br>
+        Calculate \(\frac{42 \, \text{N}}{3.22 \, \text{m} \times 2.005 \, \text{m}}\).<br><br>
+        <strong>Step 1:</strong> Calculate the denominator:<br>
+        \(3.22 \times 2.005 = 6.4561 \, \text{m}^2\)<br>
+        <strong>Step 2:</strong> Perform the division:<br>
+        \(\frac{42}{6.4561} = 6.97015 \, \text{N/m}^2\)<br>
+        <strong>Step 3:</strong> Identify least significant factor → 42 has 2 significant figures<br>
+        <strong>Step 4:</strong> Round the result to 2 significant figures<br>
+        <span class="red-highlight">Answer: \(7.0 \, \text{N/m}^2\)</span>
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 4 (Multiplication):</span><br>
+        Calculate \(3.1416 \times 2.34 \times 0.58\).<br><br>
+        <strong>Step 1:</strong> Perform the multiplication:<br>
+        \(3.1416 \times 2.34 = 7.351344\)<br>
+        \(7.351344 \times 0.58 = 4.26377952\)<br>
+        <strong>Step 2:</strong> Identify least significant factor → 0.58 has 2 significant figures<br>
+        <strong>Step 3:</strong> Round the result to 2 significant figures<br>
+        <span class="red-highlight">Answer: \(4.3\)</span>
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 5 (Division):</span><br>
+        Calculate \(\frac{3840}{285.3}\).<br><br>
+        <strong>Step 1:</strong> Perform the division:<br>
+        \(\frac{3840}{285.3} = 13.459516\)<br>
+        <strong>Step 2:</strong> Identify least significant factor → 3840 has 3 significant figures<br>
+        <strong>Step 3:</strong> Round the result to 3 significant figures<br>
+        <span class="red-highlight">Answer: \(13.5\)</span>
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 6 (Division with decimals):</span><br>
+        Calculate \(\frac{360.0}{3.000}\).<br><br>
+        <strong>Step 1:</strong> Perform the division:<br>
+        \(\frac{360.0}{3.000} = 12\)<br>
+        <strong>Step 2:</strong> Identify significant figures in inputs → both have 4 significant figures<br>
+        <strong>Step 3:</strong> Report result with 4 significant figures<br>
+        <span class="red-highlight">Answer: \(12.00\)</span>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- SLIDE 4: Scalars and Vectors -->
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Scalars and Vectors</div>
+    <div class="subhead">Definitions, Representations, and Basic Properties</div>
+
+    <div class="two-columns">
+        <div class="col">
+            <h3 style="color: #f5d742;">Scalar Quantities</h3>
+            <ul class="compact-list">
+                <li>Defined by a <span class="blue-highlight">number and a unit</span> only</li>
+                <li>Obey the rules of <span class="red-highlight">ordinary algebra</span></li>
+                <li>Negative of a scalar has <span class="orange-highlight">no meaning</span></li>
+                <li><span class="blue-highlight">Examples:</span> distance, speed, power, energy, current, temperature, mass, time, area, volume, pressure, density</li>
+            </ul>
+        </div>
+        <div class="col">
+            <h3 style="color: #f5d742;">Vector Quantities</h3>
+            <ul class="compact-list">
+                <li>Defined by <span class="blue-highlight">both magnitude and direction</span></li>
+                <li>Obey the <span class="red-highlight">law of vector algebra</span></li>
+                <li>Negative of a vector → direction is <span class="orange-highlight">changed</span></li>
+                <li><span class="blue-highlight">Examples:</span> force, torque, velocity, displacement, acceleration, linear momentum, angular momentum, electric field, gravitational field, magnetic field</li>
+            </ul>
+        </div>
+    </div>
+
+    <ul class="bullet-list">
+        <li>Magnitude of vector \(\vec{A}\) → written as \(|\vec{A}|\) or \(A\) → always a <span class="red-highlight">positive number</span></li>
+        <li>Direction of a vector → described by an <span class="blue-highlight">angle (\(\theta\))</span> or <span class="blue-highlight">unit vectors</span> (\(\hat{i}, \hat{j}, \hat{k}\) or \(\hat{x}, \hat{y}, \hat{z}\))</li>
+    </ul>
+
+    <h2>Representation of Vectors</h2>
+    <ul class="bullet-list">
+        <li>Vectors represented by:
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li><span class="blue-highlight">Bold face letters</span> → A, B, C</li>
+                <li>Letter with an <span class="red-highlight">overhead arrow</span> → \(\vec{a}, \vec{v}, \vec{p}, \vec{\tau}\)</li>
+                <li><span class="orange-highlight">Geometrically</span> → directed line segment called an <strong>arrow</strong> (→)</li>
+            </ul>
+        </li>
+        <li>Parts of an arrow:
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li><span class="blue-highlight">Tail</span> → initial point</li>
+                <li><span class="red-highlight">Head (tip)</span> → shows the direction of the vector</li>
+            </ul>
+        </li>
+        <li>Magnitude of the arrow → <span class="blue-highlight">proportional</span> to the magnitude of the vector</li>
+    </ul>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example:</span> Given vectors \(\vec{a}_1 = 3 \, \text{m/s}^2\), \(\vec{a}_2 = -3 \, \text{m/s}^2\), \(\vec{a}_3 = 2 \, \text{m/s}^2\), \(\vec{a}_4 = 3 \, \text{m/s}^2\), \(\vec{F}_1 = 3 \, \text{N}\), \(\vec{F}_2 = -3 \, \text{N}\), \(\vec{F}_3 = 2 \, \text{N}\).<br>
+        Only \(\vec{a}_1\) and \(\vec{a}_4\) are <span class="red-highlight">equal vectors</span>.
+    </div>
+</div>
+
+<!-- SLIDE 5: Addition and Subtraction of Vectors (Geometric Methods) -->
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Addition and Subtraction of Vectors</div>
+    <div class="subhead">Geometric Methods: Triangular, Parallelogram, and Polygon</div>
+
+    <h2>Addition of Vectors</h2>
+    <ul class="bullet-list">
+        <li>Combination of two or more vectors to get a single new vector</li>
+        <li>New vector → called <span class="red-highlight">Resultant Vector (R)</span></li>
+        <li>Resultant has the <span class="blue-highlight">same effect</span> on a body as the two or more vectors actually acting on that body</li>
+        <li>Resultant starts at the <span class="orange-highlight">beginning of the first vector</span> and ends at the <span class="orange-highlight">end of the last one</span></li>
+        <li>Two ways to add vectors: <span class="blue-highlight">Geometrically</span> or <span class="blue-highlight">Analytically</span></li>
+    </ul>
+
+    <h2>Geometric Addition of Vectors</h2>
+    <ul class="bullet-list">
+        <li>Graphical way of adding vectors</li>
+        <li>Must connect vectors <span class="red-highlight">head to tail</span></li>
+        <li>Three methods:
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Triangular method (2 vectors)</li>
+                <li>Parallelogram method (2 vectors with an angle)</li>
+                <li>Polygon method (3 or more vectors)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>Triangular Method</h3>
+    <ul class="bullet-list">
+        <li>Used to add <span class="blue-highlight">two vectors</span></li>
+        <li>Resultant forms the <span class="red-highlight">third side of the triangle</span></li>
+        <li><strong>Steps:</strong>
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Connect the vectors <span class="blue-highlight">head to tail</span></li>
+                <li>Draw resultant from <span class="orange-highlight">tail of first vector</span> to <span class="orange-highlight">head of second vector</span></li>
+            </ul>
+        </li>
+    </ul>
+    <div class="math-block">
+        \(\vec{R} = \vec{A} + \vec{B}\)
+    </div>
+	
+  <div class="image-figure">
+        <img src="triangular_method.png" alt="triangular method for vector addition" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Fig 1: Triangular_method method </div>
+        <div class="image-placeholder-note" style="display:none;">[triangular_method.png]</div>
+    </div>
+	
+    <h3>Parallelogram Method</h3>
+    <ul class="bullet-list">
+        <li>Used to add <span class="blue-highlight">two vectors with a given angle</span> between them</li>
+        <li>Vectors connected <span class="red-highlight">tail to tail</span></li>
+        <li>Draw a parallelogram with the two vectors as sides</li>
+        <li><span class="blue-highlight">Major diagonal</span> → sum (resultant)</li>
+        <li><span class="orange-highlight">Minor diagonal</span> → difference</li>
+    </ul>
+
+    <div class="image-figure">
+        <img src="parallelogram_method.png" alt="Parallelogram method for vector addition" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Fig 2: Parallelogram method → major diagonal shows resultant \(\vec{R} = \vec{A} + \vec{B}\)</div>
+        <div class="image-placeholder-note" style="display:none;">[parallelogram_method.png]</div>
+    </div>
+
+    <ul class="bullet-list">
+        <li><strong>Steps:</strong>
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Draw each vector over the head of the other</li>
+                <li>Draw resultant from <span class="blue-highlight">common tail to common head</span></li>
+            </ul>
+        </li>
+        <li>From this: \(\vec{A} + \vec{B}^* = \vec{B} + \vec{A}^*\) → \(\vec{A} + \vec{B} = \vec{B} + \vec{A}\)</li>
+        <li>This is called <span class="red-highlight">Commutative Property</span> of vector addition</li>
+    </ul>
+
+    <h3>Polygon Method</h3>
+    <ul class="bullet-list">
+        <li>Used to add <span class="blue-highlight">three or more vectors</span> graphically</li>
+        <li><strong>Steps:</strong>
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Connect all vectors <span class="blue-highlight">head to tail</span> in order</li>
+                <li>Draw resultant from <span class="red-highlight">tail of first vector</span> to <span class="red-highlight">head of last vector</span></li>
+            </ul>
+        </li>
+        <li>Resultant forms the <span class="orange-highlight">last side of the polygon</span></li>
+    </ul>
+
+    <div class="image-figure">
+        <img src="polygon_method.png" alt="Polygon method for vector addition" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Fig 3: Polygon method → resultant from tail of first to head of last</div>
+        <div class="image-placeholder-note" style="display:none;">[polygon_method.png]</div>
+    </div>
+
+    <ul class="bullet-list">
+        <li>Using polygon method: \((\vec{A} + \vec{B}) + \vec{C} = \vec{A} + (\vec{B} + \vec{C})\)</li>
+        <li>This is called <span class="red-highlight">Associative Property</span> of vector addition</li>
+    </ul>
+
+    <h2>Subtraction of Vectors</h2>
+    <ul class="bullet-list">
+        <li>Difference between two vectors \(\vec{A}\) and \(\vec{B}\) → denoted \(\vec{A} - \vec{B}\)</li>
+        <li>Equivalent to adding \(\vec{A}\) to the <span class="blue-highlight">opposite of \(\vec{B}\)</span>: \(\vec{A} + (-\vec{B})\)</li>
+    </ul>
+
+    <div class="image-figure">
+        <img src="vector_subtraction.png" alt="Vector subtraction method" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Fig 4: Vector subtraction → \(\vec{A} - \vec{B} = \vec{A} + (-\vec{B})\)</div>
+        <div class="image-placeholder-note" style="display:none;">[vector_subtraction.png]</div>
+    </div>
+</div>
+
+<!-- SLIDE 6: Analytic Addition of Vectors -->
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Analytic Addition of Vectors</div>
+    <div class="subhead">Parallel and Anti-parallel Vectors</div>
+
+    <ul class="bullet-list">
+        <li>Analytical method involves only the <span class="blue-highlight">usual rules of algebra</span></li>
+        <li>Avoids the cumbersome and limited precision of graphical addition</li>
+    </ul>
+
+    <h2>Addition of Parallel and Anti-parallel Vectors</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Parallel vectors:</span>
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Same direction → angle between them is <span class="red-highlight">0°</span></li>
+                <li>Resultant vector = <span class="orange-highlight">sum</span> of magnitudes</li>
+                <li>Direction = same as the original vectors</li>
+            </ul>
+        </li>
+        <li><span class="blue-highlight">Anti-parallel vectors:</span>
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Opposite direction → angle between them is <span class="red-highlight">180°</span></li>
+                <li>Resultant = <span class="orange-highlight">difference</span> of magnitudes</li>
+                <li>Direction = direction of the <span class="red-highlight">greater vector</span></li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 1 (Parallel vectors):</span><br>
+        A boy pulls a wood block with \(40 \, \text{N}\) and his sister helps with \(30 \, \text{N}\) in the same direction. What is the resultant force?<br><br>
+        <strong>Step 1:</strong> Identify given values<br>
+        \(\vec{F}_{\text{boy}} = 40 \, \text{N}\), \(\vec{F}_{\text{girl}} = 30 \, \text{N}\) (same direction)<br>
+        <strong>Step 2:</strong> Add the magnitudes since they are parallel<br>
+        \(\vec{F}_{\text{total}} = \vec{F}_{\text{boy}} + \vec{F}_{\text{girl}} = 40 \, \text{N} + 30 \, \text{N}\)<br>
+        <strong>Step 3:</strong> Calculate<br>
+        \(\vec{F}_{\text{total}} = 70 \, \text{N}\) in the same direction<br>
+        <span class="red-highlight">Answer: \(70 \, \text{N}\)</span>
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 2 (Anti-parallel vectors):</span><br>
+        Two forces \(\vec{F}_1 = 20 \, \text{N}\) and \(\vec{F}_2 = 5 \, \text{N}\) act in opposite directions. Find the resultant force.<br><br>
+        <strong>Step 1:</strong> Identify given values<br>
+        \(\vec{F}_1 = 20 \, \text{N}\) (one direction), \(\vec{F}_2 = 5 \, \text{N}\) (opposite direction)<br>
+        <strong>Step 2:</strong> Subtract the magnitudes since they are anti-parallel<br>
+        \(\vec{F}_{\text{net}} = \vec{F}_1 - \vec{F}_2 = 20 \, \text{N} - 5 \, \text{N}\)<br>
+        <strong>Step 3:</strong> Calculate<br>
+        \(\vec{F}_{\text{net}} = 15 \, \text{N}\) in the direction of the greater force (\(\vec{F}_1\))<br>
+        <span class="red-highlight">Answer: \(15 \, \text{N}\) in the direction of \(20 \, \text{N}\) force</span>
+    </div>
+
+    <div class="image-figure">
+        <img src="anti_parallel_forces.png" alt="Anti-parallel forces" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Fig 5: Anti-parallel forces → resultant = difference of magnitudes</div>
+        <div class="image-placeholder-note" style="display:none;">[anti_parallel_forces.png]</div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Resolution of a Vector</div>
+    <div class="subhead">Rectangular Components and Analytical Addition</div>
+
+    <ul class="bullet-list">
+        <li>To add non-parallel and non-perpendicular vectors analytically → need to have the <span class="blue-highlight">components</span> of the vectors to be added</li>
+        <li><span class="blue-highlight">Resolution</span> → technique used to find components</li>
+        <li>Resolution → process of expressing a vector into its <span class="red-highlight">rectangular components</span> (nearly always perpendicular to one another) using trigonometric relations</li>
+        <li><span class="orange-highlight">Simply put:</span> Resolution of a vector → split a vector into its <span class="blue-highlight">horizontal and vertical components</span> using trigonometric relations</li>
+        <li>Using components → add or subtract vectors by adding or subtracting the <span class="red-highlight">respective components</span> one from the other</li>
+    </ul>
+
+  
+
+    <h2>Trigonometric Relations</h2>
+
+    <div class="math-block">
+        <strong>From sine function:</strong><br>
+        \(\sin \theta = \frac{\text{opposite}}{\text{hypotenuse}} = \frac{R_y}{R}\)<br><br>
+        \(R_y = R \sin \theta\) → called the <span class="blue-highlight">vertical or y-component</span> of vector \(\vec{R}\)
+    </div>
+
+    <div class="math-block">
+        <strong>From cosine function:</strong><br>
+        \(\cos \theta = \frac{\text{adjacent}}{\text{hypotenuse}} = \frac{R_x}{R}\)<br><br>
+        \(R_x = R \cos \theta\) → called the <span class="blue-highlight">horizontal or x-component</span> of vector \(\vec{R}\)
+    </div>
+
+    <h2>Resultant from Components</h2>
+
+    <ul class="bullet-list">
+        <li>For three vectors \(\vec{A}\), \(\vec{B}\), and \(\vec{C}\) → magnitude of resultant \(\vec{R}\) is:</li>
+    </ul>
+
+    <div class="math-block">
+        \(R = \sqrt{R_x^2 + R_y^2}\)
+    </div>
+	
+	  <div class="image-figure">
+        <img src="vector_resolution.png" alt="Vector resolution into components" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Fig 6: Resolution of vector R into horizontal (R_x) and vertical (R_y) components</div>
+        <div class="image-placeholder-note" style="display:none;">[vector_resolution.png]</div>
+    </div>
+
+    <ul class="bullet-list">
+        <li>Where:</li>
+    </ul>
+
+    <div class="math-block">
+        \(R_x = A_x + B_x + C_x\)<br>
+        \(R_y = A_y + B_y + C_y\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>\(A_x, B_x, C_x, A_y, B_y, C_y\) → components of the three vectors obtained by resolution</li>
+        <li>Direction \(\theta\) the resultant makes with x-axis → calculated as:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\theta = \tan^{-1} \left( \frac{R_y}{R_x} \right)\)
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Vector Addition Example</div>
+    <div class="subhead">Analytical Method Using Components</div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 1:</span> The three displacement vectors in the figure have magnitudes \(a = 2\,\text{m}\), \(b = 6\,\text{m}\), and \(c = 10\,\text{m}\) and angle \(\theta = 30^\circ\).<br><br>
+        a) What is the magnitude of resultant vector \(\overrightarrow{R} = \overrightarrow{a} + \overrightarrow{b} + \overrightarrow{c}\)?<br>
+        b) Find the direction of \(\overrightarrow{R}\).
+    </div>
+
+    <div class="image-figure">
+        <img src="three_vectors.png" alt="Three displacement vectors at angles" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Fig 7: Vectors a, b, c with given magnitudes and angle θ = 30°</div>
+        <div class="image-placeholder-note" style="display:none;">[three_vectors.png]</div>
+    </div>
+
+    <h2>Solution (a) — Magnitude of Resultant</h2>
+
+    <ul class="bullet-list">
+        <li>Vector \(\vec{a}\) is along x-axis → only x-component:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{a}_x = 2\,\text{m},\quad \vec{a}_y = 0\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Vector \(\vec{b}\) makes angle \(\theta = 30^\circ\) with x-axis → resolve:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{b}_x = b \cos 30^\circ = 6\,\text{m} \times 0.866 = 5.2\,\text{m}\)<br>
+        \(\vec{b}_y = b \sin 30^\circ = 6\,\text{m} \times 0.5 = 3\,\text{m}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>To find components of \(\vec{c}\) → let angle \(\vec{c}\) makes with negative x-axis be \(\beta\)</li>
+        <li>\(\vec{b}\) and \(\vec{c}\) are perpendicular → \(\beta + \theta + 90^\circ = 180^\circ\) (angle sum theorem for a straight angle)</li>
+    </ul>
+
+    <div class="math-block">
+        \(\beta + 120^\circ = 180^\circ\)<br>
+        \(\beta = 60^\circ\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Resolve \(\vec{c}\) (negative x-direction → minus sign for x-component):</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{c}_x = -c \cos 60^\circ = -10\,\text{m} \times 0.5 = -5\,\text{m}\)<br>
+        \(\vec{c}_y = c \sin 60^\circ = 10\,\text{m} \times 0.866 = 8.66\,\text{m}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Sum of x-components:</li>
+    </ul>
+
+    <div class="math-block">
+        \(R_x = a_x + b_x + c_x = 2\,\text{m} + 5.2\,\text{m} - 5\,\text{m} = 2.2\,\text{m}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Sum of y-components:</li>
+    </ul>
+
+    <div class="math-block">
+        \(R_y = a_y + b_y + c_y = 0 + 3\,\text{m} + 8.66\,\text{m} = 11.66\,\text{m}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Magnitude of resultant vector \(\vec{R}\) → Pythagorean theorem:</li>
+    </ul>
+
+    <div class="math-block">
+        \(R = \sqrt{R_x^2 + R_y^2} = \sqrt{(11.66\,\text{m})^2 + (2.2\,\text{m})^2}\)<br>
+        \(R = \sqrt{135.9556 + 4.84} = \sqrt{140.7956} = 11.9\,\text{m}\)
+    </div>
+
+    <h2>Solution (b) — Direction of Resultant</h2>
+
+    <ul class="bullet-list">
+        <li>Direction \(\theta\) calculated from trigonometric relations:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\tan \theta = \frac{R_y}{R_x} = \frac{11.66\,\text{m}}{2.2\,\text{m}} = 5.3\)<br>
+        \(\theta = \tan^{-1}(5.3) = 79.3^\circ\)
+    </div>
+
+    <div class="callout">
+        <span class="red-highlight">Answer:</span> The resultant vector is \(\vec{R} = 11.9\,\text{m}\) at \(79.3^\circ\) above the x-axis.
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+   
+    <div class="callout">
+        <span class="blue-highlight">★ Example 2:</span> Three force vectors have magnitudes \(\vec{A} = 100\,\text{N}\), \(\vec{B} = 80\,\text{N}\), and \(\vec{C} = 40\,\text{N}\) as shown below.<br><br>
+        a) What is the magnitude of resultant vector \(\vec{R} = \vec{A} + \vec{B} + \vec{C}\)?<br>
+        b) Find the direction of \(\vec{R}\).
+    </div>
+
+    <div class="image-figure">
+        <img src="three_force_vectors2.png" alt="Three force vectors at various angles" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Fig 8: Force vectors A (30° above +x), B (60° above -x), C (53° below -x)</div>
+        <div class="image-placeholder-note" style="display:none;">[three_force_vectors.png]</div>
+    </div>
+
+    <ul class="bullet-list">
+        <li>Given: \(\vec{A}\) is \(30^\circ\) above x-axis, \(\vec{B}\) makes \(30^\circ\) with y-axis (or \(60^\circ\) above negative x-axis), \(\vec{C}\) is \(53^\circ\) below negative x-axis</li>
+        <li>From the figure → both \(\vec{B}\) and \(\vec{C}\) have <span class="red-highlight">negative x-components</span> and \(\vec{C}\) has <span class="red-highlight">negative y-component</span></li>
+    </ul>
+
+    <h2>Solution (a) — Magnitude of Resultant</h2>
+
+    <ul class="bullet-list">
+        <li>Resolve \(\vec{A}\) (30° above +x-axis):</li>
+    </ul>
+
+    <div class="math-block">
+        \(A_x = A \cos 30^\circ = 100\,\text{N} \times 0.866 = 86.6\,\text{N}\)<br>
+        \(A_y = A \sin 30^\circ = 100\,\text{N} \times 0.5 = 50\,\text{N}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Resolve \(\vec{B}\) (60° above negative x-axis → negative x, positive y):</li>
+    </ul>
+
+    <div class="math-block">
+        \(B_x = -B \sin 30^\circ = -80\,\text{N} \times 0.5 = -40\,\text{N}\)<br>
+        \(B_y = B \cos 30^\circ = 80\,\text{N} \times 0.866 = 69.28\,\text{N}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Resolve \(\vec{C}\) (53° below negative x-axis → negative x, negative y):</li>
+    </ul>
+
+    <div class="math-block">
+        \(C_x = -C \sin 53^\circ = -40\,\text{N} \times 0.8 = -32\,\text{N}\)<br>
+        \(C_y = -C \cos 53^\circ = -40\,\text{N} \times 0.6 = -24\,\text{N}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Sum of x-components:</li>
+    </ul>
+
+    <div class="math-block">
+        \(R_x = A_x + B_x + C_x = 86.6\,\text{N} - 40\,\text{N} - 32\,\text{N} = 14.6\,\text{N}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Sum of y-components:</li>
+    </ul>
+
+    <div class="math-block">
+        \(R_y = A_y + B_y + C_y = 50\,\text{N} + 69.28\,\text{N} - 24\,\text{N} = 95.28\,\text{N}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Magnitude of resultant:</li>
+    </ul>
+
+    <div class="math-block">
+        \(R = \sqrt{R_x^2 + R_y^2} = \sqrt{(14.6\,\text{N})^2 + (95.28\,\text{N})^2}\)<br>
+        \(R = \sqrt{213.16 + 9078.2784} = \sqrt{9291.4384} = 96.39\,\text{N}\)
+    </div>
+	
+	
+	  <div class="image-figure">
+        <img src="three_force_vectors3.png" alt="Three force vectors at various angles" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-placeholder-note" style="display:none;">[three_force_vectors.png]</div>
+    </div>
+
+    <h2>Solution (b) — Direction of Resultant</h2>
+
+    <div class="math-block">
+        \(\tan \theta = \frac{R_y}{R_x} = \frac{95.28\,\text{N}}{14.6\,\text{N}} = 6.53\)<br>
+        \(\theta = \tan^{-1}(6.53) = 81.3^\circ\)
+    </div>
+
+    <div class="callout">
+        <span class="red-highlight">Answer:</span> The resultant vector is \(\vec{R} = 96.39\,\text{N}\) at \(81.3^\circ\) above the x-axis.
+    </div>
+
+    <h2>Equilibrant Vector</h2>
+
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Equilibrant vector</span> → vector which cancels out the effect of two or more vectors on a body</li>
+        <li>Equilibrant → one vector that cancels the effect that the two or more vectors actually have on a body</li>
+        <li>\(\vec{R}_e = -\vec{R}\)</li>
+        <li>Components of equilibrant vector for this example:</li>
+    </ul>
+
+    <div class="math-block">
+        \(R_{ex} = -14.6\,\text{N},\quad R_{ey} = -95.28\,\text{N}\)<br>
+        \(\vec{R}_e = 96.39\,\text{N}\) at \(81.3^\circ\) below the negative x-axis
+    </div>
+
+    <ul class="bullet-list">
+        <li>\(\vec{R}_e + \vec{R} = 0\)</li>
+        <li>If \(\vec{R}\) is a force vector → \(\vec{R}_e\) will be the <span class="red-highlight">reaction force</span> that brings the body to equilibrium</li>
+        <li><span class="blue-highlight">Equilibrium of a body</span> → maintained if the sum of all external forces acting on it is zero</li>
+    </ul>
+
+    <div class="math-block">
+        \(\sum \vec{F} = 0\)
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Multiplication of Vectors</div>
+    <div class="subhead">Scalar (Dot) Product and Vector (Cross) Product</div>
+
+    <ul class="bullet-list">
+        <li>Multiplying a vector by a scalar → changes magnitude or direction (or both)</li>
+        <li>Multiplying one vector by another vector → two common definitions: <span class="blue-highlight">scalar product</span> and <span class="red-highlight">vector product</span></li>
+        <li>Scalar product of two vectors → just a <span class="blue-highlight">number</span> (scalar)</li>
+        <li>Vector product of two vectors → itself a <span class="red-highlight">vector</span></li>
+    </ul>
+
+    <h2>Scalar (Dot) Product</h2>
+
+    <ul class="bullet-list">
+        <li>Denoted by \(\vec{A} \cdot \vec{B}\) → given by:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{A} \cdot \vec{B} = AB \cos \theta\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>\(\theta\) → angle between vectors \(\vec{A}\) and \(\vec{B}\)</li>
+        <li>Dot product = <span class="red-highlight">zero</span> when \(\theta = 90^\circ\) (perpendicular vectors)</li>
+        <li>If two vectors are perpendicular → their scalar product is zero, and vice versa</li>
+    </ul>
+
+    <div class="math-block">
+        \(\hat{i} \cdot \hat{j} = \hat{i} \cdot \hat{k} = \hat{k} \cdot \hat{j} = 0\)<br>
+        \(\hat{i} \cdot \hat{i} = \hat{j} \cdot \hat{j} = \hat{k} \cdot \hat{k} = 1\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>In component form (three dimensions):</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{A} \cdot \vec{B} = A_x B_x + A_y B_y + A_z B_z\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Cosine of angle \(\theta\) between two vectors:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\cos \theta = \dfrac{A_x B_x + A_y B_y + A_z B_z}{AB}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Scalar product is <span class="blue-highlight">commutative</span> and <span class="blue-highlight">distributive</span> over addition/subtraction:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{A} \cdot \vec{B} = \vec{B} \cdot \vec{A}\)<br>
+        \(\vec{A} \cdot (\vec{B} \pm \vec{C}) = \vec{A} \cdot \vec{B} \pm \vec{A} \cdot \vec{C}\)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 1:</span> Find the scalar product of \(\vec{A} = \hat{i} + 2\hat{j} + 3\hat{k}\) and \(\vec{B} = 2\hat{i} + 3\hat{j} + 4\hat{k}\).
+    </div>
+
+    <div class="math-block">
+        \(\vec{A} \cdot \vec{B} = A_x B_x + A_y B_y + A_z B_z\)<br>
+        \(= (1)(2) + (2)(3) + (3)(4) = 2 + 6 + 12 = 20\)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 2:</span> Find the value of \(a\) so that \(\vec{A} \cdot \vec{B} = 0\) for \(\vec{A} = 2\hat{i} + a\hat{j} + 3\hat{k}\) and \(\vec{B} = -3\hat{i} - 2\hat{j} + 4\hat{k}\).
+    </div>
+
+    <div class="math-block">
+        \(\vec{A} \cdot \vec{B} = (2)(-3) + (a)(-2) + (3)(4) = -6 - 2a + 12 = 6 - 2a\)<br>
+        \(0 = 6 - 2a \quad \Rightarrow \quad 2a = 6 \quad \Rightarrow \quad a = 3\)
+    </div>
+</div>
+
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Vector (Cross) Product</div>
+    <div class="subhead">Definition, Properties, and Component Form</div>
+
+    <ul class="bullet-list">
+        <li>Vector product of \(\vec{A}\) and \(\vec{B}\) → third vector \(\vec{C}\)</li>
+        <li>\(\vec{C}\) is <span class="red-highlight">perpendicular</span> to both \(\vec{A}\) and \(\vec{B}\) and to the plane containing \(\vec{A}\) and \(\vec{B}\)</li>
+        <li>Magnitude of vector product:</li>
+    </ul>
+
+    <div class="math-block">
+        \(|\vec{A} \times \vec{B}| = AB \sin \theta\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Product is <span class="blue-highlight">maximum</span> when \(\theta = 90^\circ\)</li>
+        <li>Product is <span class="red-highlight">zero</span> when \(\theta = 0^\circ\) (parallel vectors)</li>
+        <li>If two vectors are parallel → their cross product is zero, and vice versa</li>
+    </ul>
+
+    <div class="math-block">
+        \(\hat{i} \times \hat{j} = \hat{k},\quad \hat{i} \times \hat{k} = -\hat{j},\quad \hat{j} \times \hat{k} = \hat{i}\)<br>
+        \(\hat{i} \times \hat{i} = \hat{j} \times \hat{j} = \hat{k} \times \hat{k} = 0\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Vector product is <span class="orange-highlight">not commutative</span> but is <span class="blue-highlight">distributive</span> over addition/subtraction:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{A} \times \vec{B} = -\vec{B} \times \vec{A}\)<br>
+        \(\vec{A} \times (\vec{B} \pm \vec{C}) = \vec{A} \times \vec{B} \pm \vec{A} \times \vec{C}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>In component form → cross product determined using <span class="red-highlight">determinant</span> of matrix formed by the two vectors:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{A} \times \vec{B} = \det \begin{vmatrix} \hat{i} & \hat{j} & \hat{k} \\ A_x & A_y & A_z \\ B_x & B_y & B_z \end{vmatrix}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Expanded form:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{A} \times \vec{B} = (A_y B_z - A_z B_y)\hat{i} - (A_x B_z - A_z B_x)\hat{j} + (A_x B_y - A_y B_x)\hat{k}\)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 1:</span> Find \(\vec{A} \times \vec{B}\) for \(\vec{A} = \hat{i} + 2\hat{j} + 3\hat{k}\) and \(\vec{B} = 2\hat{i} + 3\hat{j} + 4\hat{k}\).
+    </div>
+
+    <div class="math-block">
+        \(\vec{C} = (2 \times 4 - 3 \times 3)\hat{i} - (1 \times 4 - 3 \times 2)\hat{j} + (1 \times 3 - 2 \times 2)\hat{k}\)<br>
+        \(\vec{C} = (8 - 9)\hat{i} - (4 - 6)\hat{j} + (3 - 4)\hat{k} = -\hat{i} + 2\hat{j} - \hat{k}\)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 2:</span> Find \(\vec{a} \times \vec{b}\) if \(\vec{a} = 3\hat{i} - 2\hat{j} + 5\hat{k}\) and \(\vec{b} = 7\hat{i} + 4\hat{j} - 8\hat{k}\).
+    </div>
+
+    <div class="math-block">
+        \(\vec{c} = ((-2)(-8) - (5)(4))\hat{i} - ((3)(-8) - (5)(7))\hat{j} + ((3)(4) - (-2)(7))\hat{k}\)<br>
+        \(\vec{c} = (16 - 20)\hat{i} - (-24 - 35)\hat{j} + (12 + 14)\hat{k} = -4\hat{i} + 59\hat{j} + 26\hat{k}\)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 3:</span> If \(\vec{a} = 8\hat{i} + \hat{j} - 2\hat{k}\) and \(\vec{b} = 5\hat{i} - 3\hat{j} + \hat{k}\), show that \(\vec{a} \times \vec{b} = -5\hat{i} - 18\hat{j} - 29\hat{k}\).
+    </div>
+
+    <div class="math-block">
+        \(\vec{a} \times \vec{b} = \det \begin{vmatrix} \hat{i} & \hat{j} & \hat{k} \\ 8 & 1 & -2 \\ 5 & -3 & 1 \end{vmatrix}\)<br>
+        \(= (1 \times 1 - (-2) \times (-3))\hat{i} - (8 \times 1 - (-2) \times 5)\hat{j} + (8 \times (-3) - 1 \times 5)\hat{k}\)<br>
+        \(= (1 - 6)\hat{i} - (8 + 10)\hat{j} + (-24 - 5)\hat{k} = -5\hat{i} - 18\hat{j} - 29\hat{k}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li><span class="orange-highlight">Do IT:</span> Show that \(\vec{b} \times \vec{a} = 5\hat{i} + 18\hat{j} + 29\hat{k}\) for the same vectors</li>
+    </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© 2019 All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Types of Vectors</div>
+    <div class="subhead">Null, Position, Coplanar, Collinear, and Unit Vectors</div>
+
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Null vectors</span> → vectors of <span class="red-highlight">zero magnitude</span></li>
+        <li><span class="blue-highlight">Position vectors</span> → vectors used to <span class="red-highlight">locate or define the location</span> of a point or a body in space</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{r} = (x, y, z) = x\hat{i} + y\hat{j} + z\hat{k}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Coplanar vectors</span> → vectors which lie in the <span class="red-highlight">same two-dimensional plane</span> (may include vectors at different angles to each other)</li>
+        <li><span class="blue-highlight">Collinear vectors</span> → vectors which are <span class="red-highlight">parallel to each other</span> and act along the same line (can be in same direction or opposite directions)</li>
+        <li><span class="blue-highlight">Unit vectors</span> → vectors with <span class="red-highlight">length equal to one unit</span></li>
+        <li>Three unit vectors used to specify direction:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\hat{i}\) → <span class="blue-highlight">1 unit in x-direction</span><br>
+        \(\hat{j}\) → <span class="blue-highlight">1 unit in y-direction</span><br>
+        \(\hat{k}\) → <span class="blue-highlight">1 unit in z-direction</span>
+    </div>
+
+    <ul class="bullet-list">
+        <li>Any vector \(\vec{A}\) expressed in terms of <span class="red-highlight">magnitude \(A\)</span> and <span class="blue-highlight">unit vector \(\hat{u}\)</span> in its direction:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\vec{A} = A\hat{u}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Unit vector in direction of given vector \(\vec{A}\) → defined by <span class="red-highlight">dividing the vector by its magnitude</span>:</li>
+    </ul>
+
+    <div class="math-block">
+        \(\hat{u} = \dfrac{\vec{A}}{A}\)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">★ Example 1:</span> Given \(\vec{A} = -2\hat{i} + 1\hat{j} + 3\hat{k}\) and \(\vec{B} = 4\hat{i} + 1\hat{j} - 2\hat{k}\), find:<br>
+        a) \(\vec{A} - \vec{B}\) &nbsp;&nbsp; b) \(\vec{B} - 2\vec{A}\) &nbsp;&nbsp; c) \(\vec{A} + \vec{B}\) &nbsp;&nbsp; d) <span class="red-highlight">unit vector</span> in direction of \(\vec{A} + \vec{B}\)
+    </div>
+
+    <div class="math-block">
+        <strong>a) \(\vec{A} - \vec{B}\)</strong><br>
+        \(\vec{A} - \vec{B} = (-2\hat{i} + \hat{j} + 3\hat{k}) - (4\hat{i} + \hat{j} - 2\hat{k}) = -6\hat{i} + 5\hat{k}\)
+    </div>
+
+    <div class="math-block">
+        <strong>b) \(\vec{B} - 2\vec{A}\)</strong><br>
+        \(\vec{B} - 2\vec{A} = (4\hat{i} + \hat{j} - 2\hat{k}) - 2(-2\hat{i} + \hat{j} + 3\hat{k})\)<br>
+        \(= 4\hat{i} + \hat{j} - 2\hat{k} + 4\hat{i} - 2\hat{j} - 6\hat{k} = 8\hat{i} - \hat{j} - 8\hat{k}\)
+    </div>
+
+    <div class="math-block">
+        <strong>c) \(\vec{A} + \vec{B}\)</strong><br>
+        \(\vec{A} + \vec{B} = (-2\hat{i} + \hat{j} + 3\hat{k}) + (4\hat{i} + \hat{j} - 2\hat{k}) = 2\hat{i} + 2\hat{j} + \hat{k}\)
+    </div>
+
+    <ul class="bullet-list">
+        <li>d) <span class="red-highlight">Unit vector \(\hat{U}\)</span> in direction of \(\vec{A} + \vec{B}\) → divide vector by its <span class="blue-highlight">magnitude</span></li>
+    </ul>
+
+    <div class="math-block">
+        \(|\vec{A} + \vec{B}| = \sqrt{2^2 + 2^2 + 1^2} = \sqrt{4 + 4 + 1} = \sqrt{9} = 3\)<br>
+        \(\hat{U} = \dfrac{2\hat{i} + 2\hat{j} + \hat{k}}{3} = \dfrac{2}{3}\hat{i} + \dfrac{2}{3}\hat{j} + \dfrac{1}{3}\hat{k}\)
+    </div>
+
+    <div class="callout">
+        <span class="red-highlight">Answer:</span> a) \(-6\hat{i} + 5\hat{k}\) &nbsp; b) \(8\hat{i} - \hat{j} - 8\hat{k}\) &nbsp; c) \(2\hat{i} + 2\hat{j} + \hat{k}\) &nbsp; d) \(\frac{2}{3}\hat{i} + \frac{2}{3}\hat{j} + \frac{1}{3}\hat{k}\)
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof renderMathInElement !== 'undefined') {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
+    });
+</script>
+</body>
+</html>
