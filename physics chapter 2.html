@@ -1,0 +1,1826 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Qeleme Exams - Logic & Set Theory</title>
+    <!-- KaTeX CSS + JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false},{left: '\\(', right: '\\)', display: false},{left: '\\[', right: '\\]', display: true}], throwOnError: false});"></script>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a1f1a;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .slide {
+            position: relative;
+            max-width: 1100px;
+            width: 100%;
+            background: linear-gradient(145deg, #0e2a22 0%, #0a231c 100%);
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+            padding: 32px 38px 50px 38px;
+            margin-bottom: 40px;
+            border: 1px solid #2a5a4a;
+            color: #ffffff;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .slide:last-child {
+            margin-bottom: 0;
+        }
+
+        .slide::before {
+            content: "QELEME EXAMS";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-family: 'Segoe UI', 'Georgia', serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: rgba(91, 192, 168, 0.12);
+            pointer-events: none;
+            z-index: 10000;
+            white-space: nowrap;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            text-shadow: none;
+            width: 100%;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .slide > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide * {
+            z-index: auto !important;
+        }
+
+        .slide :not(.slide::before) {
+            z-index: auto;
+        }
+
+        .slide > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide .col, .slide .math-block, .slide .callout, .slide .image-figure, .slide .two-columns {
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide-footer {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.6rem;
+            color: rgba(155, 199, 187, 0.55);
+            font-family: monospace;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .slide-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #f5d742;
+            margin-bottom: 10px;
+            border-left: 5px solid #5bc0a8;
+            padding-left: 20px;
+        }
+
+        .subhead {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #f5d742;
+            margin-bottom: 22px;
+            padding-left: 26px;
+            border-bottom: 1px solid #2a5a4a;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #f5d742;
+            margin: 18px 0 12px 0;
+            border-left: 3px solid #5bc0a8;
+            padding-left: 14px;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f5e29e;
+            margin: 10px 0 6px 0;
+        }
+
+        p, li, .bullet-list li, .compact-list li, .callout, .math-block, .image-caption, .col p, .col li, td, th {
+            color: #ffffff;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        .math-block .katex, .math-block .katex * {
+            color: #ffffff;
+        }
+
+        .highlight {
+            background: #1a4036;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            display: inline-block;
+            color: #ffffff;
+        }
+
+        .blue-highlight {
+            color: #6bc8ff !important;
+            font-weight: 600;
+        }
+
+        .red-highlight {
+            color: #ff8a7a !important;
+            font-weight: 600;
+        }
+
+        .orange-highlight {
+            color: #ffb347 !important;
+            font-weight: 600;
+        }
+
+        strong.blue-highlight, b.blue-highlight {
+            color: #6bc8ff !important;
+        }
+        strong.red-highlight, b.red-highlight {
+            color: #ff8a7a !important;
+        }
+
+        .bullet-list {
+            list-style: none;
+            margin: 8px 0 14px 0;
+            padding-left: 0;
+        }
+        .bullet-list li {
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 22px;
+        }
+        .bullet-list li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: #5bc0a8;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .compact-list {
+            list-style: none;
+            margin: 6px 0 10px 0;
+            padding-left: 0;
+        }
+        .compact-list li {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .compact-list li::before {
+            content: "◦";
+            position: absolute;
+            left: 0;
+            color: #7acfb8;
+            font-size: 0.95rem;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin: 14px 0;
+        }
+        .col {
+            background: #0f2c23;
+            border-radius: 20px;
+            padding: 16px 18px;
+            border: 1px solid #2a5a4a;
+        }
+        .col .bullet-list li::before {
+            color: #5bc0a8;
+        }
+
+        .math-block {
+            background: #0a241d;
+            padding: 14px 18px;
+            border-radius: 18px;
+            margin: 14px 0;
+            border-left: 5px solid #5bc0a8;
+            overflow-x: auto;
+            font-size: 1rem;
+        }
+        .math-block .katex {
+            font-size: 1.05em;
+        }
+
+        .callout {
+            background: #0e2a22;
+            border-left: 5px solid #5bc0a8;
+            border-radius: 18px;
+            padding: 12px 18px;
+            margin: 14px 0;
+            font-size: 1rem;
+        }
+
+        .image-figure {
+            margin: 16px 0;
+            text-align: center;
+        }
+        .image-figure img {
+            max-width: 75%;
+            height: auto;
+            max-height: 210px;
+            border-radius: 12px;
+            border: 1px solid #3a7a64;
+            background: #0a241d;
+            object-fit: contain;
+        }
+        .image-caption {
+            font-size: 0.75rem;
+            color: #9bc7bb;
+            margin-top: 5px;
+        }
+        .image-placeholder-note {
+            background: #0a241d;
+            border-radius: 12px;
+            padding: 10px 16px;
+            text-align: center;
+            margin: 12px 0;
+            border: 1px dashed #5bc0a8;
+            color: #9bc7bb;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #0f2c23;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            margin: 16px 0;
+        }
+        th, td {
+            border: 1px solid #2a5a4a;
+            padding: 8px 10px;
+            text-align: center;
+            color: #ffffff;
+        }
+        th {
+            background: #1a4036;
+            color: #f5d742;
+        }
+
+        .inline-arrow {
+            font-weight: 500;
+            color: #8bcbae;
+            margin: 0 2px;
+        }
+
+        @media (max-width: 750px) {
+            .slide { padding: 24px 22px 50px 22px; }
+            .two-columns { grid-template-columns: 1fr; gap: 16px; }
+            .slide-title { font-size: 1.9rem; }
+            .image-figure img { max-width: 85%; max-height: 180px; }
+            .slide::before { font-size: 2rem; letter-spacing: 4px; opacity: 0.6; }
+            .slide-footer { font-size: 0.55rem; bottom: 8px; }
+            p, li, .bullet-list li { font-size: 1rem; }
+        }
+
+        /* PRINT STYLES - each slide stays on ONE page (no cutting) */
+       /* PRINT STYLES - each slide stays on ONE page (no cutting) */
+@media print {
+    @page {
+        margin: 0;
+        size: auto;
+    }
+    
+    html, body {
+        background: #0a231c;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        background: #0a231c;
+        padding: 0;
+    }
+    
+    .slide {
+        position: relative;
+        background: linear-gradient(145deg, #0e2a22 0%, #0a231c 100%);
+        border: none;  /* ← REMOVED BORDER FOR PRINT */
+        box-shadow: none;
+        margin: 0;
+        margin-bottom: 0;
+        padding: 0.35in 0.4in 0.55in 0.4in;
+        border-radius: 0;
+        page-break-after: always;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        overflow: visible;
+        isolation: isolate;
+    }
+    
+    .slide:last-child {
+        page-break-after: auto;
+    }
+    
+   .slide::before {
+        content: "QELEME EXAMS";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-25deg);
+        font-size: 3rem;
+        font-weight: 800;
+        color: rgba(91, 192, 168, 0.08);  /* ← Changed from 0.25 to 0.08 (much lighter) */
+        white-space: nowrap;
+        letter-spacing: 6px;
+        z-index: 10000;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .slide-footer {
+        position: absolute;
+        bottom: 12px;
+        left: 0;
+        right: 0;
+        font-size: 0.55rem;
+        color: rgba(155, 199, 187, 0.6);
+        text-align: center;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        z-index: 1;
+    }
+    
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .image-figure img {
+        max-height: 180px;
+        max-width: 65%;
+    }
+    
+    .slide > * {
+        z-index: 1;
+        position: relative;
+    }
+
+    /* Prevent headings from being left alone at the bottom of a page */
+    h1, h2, h3, h4, .slide-title, .subhead {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+        break-after: avoid;
+    }
+
+    /* Keep headings with at least 3 lines of following content */
+    h2, h3, .slide-title {
+        orphans: 3;
+        widows: 3;
+    }
+
+    /* Prevent callouts, tables, and columns from breaking */
+    .callout, .math-block, table, .two-columns, .col {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* Ensure list items stay together when possible */
+    li {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* For long lists, allow breaks but keep minimum 3 items together */
+    ul, .bullet-list, .compact-list {
+        orphans: 3;
+        widows: 3;
+    }
+}
+
+        .katex { color: #ffffff; }
+        .katex .mord, .katex .mbin, .katex .mrel { color: #f0f9f5; }
+    </style>
+</head>
+<body>
+
+  <!-- Cover Page -->
+
+<div class="slide" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(135deg, #0a2a1f 0%, #071a12 100%); padding: 60px 40px;">
+    <div class="slide-footer" style="position: absolute; bottom: 20px; left: 0; right: 0;">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <!-- Logo Image -->
+    <div style="width: 120px; height: 120px; margin-bottom: 30px;">
+        <img src="Qeleme_Exams.png" alt="Qeleme Exams Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%; box-shadow: 0 20px 35px -8px rgba(0,0,0,0.4), 0 0 0 4px rgba(91,192,168,0.2);">
+    </div>
+    
+    <!-- App Name -->
+    <div style="margin-bottom: 20px;">
+        <span style="font-size: 1.2rem; font-weight: 500; color: #5bc0a8; letter-spacing: 4px; text-transform: uppercase;">Qeleme Exams</span>
+    </div>
+    
+    <!-- Main Title -->
+    <h1 style="font-size: 3.2rem; font-weight: 800; color: #f5d742; margin: 15px 0 10px 0; text-shadow: 0 2px 10px rgba(0,0,0,0.3); letter-spacing: -0.5px;">
+        General Physics
+    </h1>
+    
+    <div style="width: 80px; height: 3px; background: #5bc0a8; margin: 20px auto;"></div>
+    
+    <h2 style="font-size: 2rem; font-weight: 600; color: #ffffff; margin: 10px 0 25px 0; border-left: none; padding-left: 0;">
+        Chapter 2
+    </h2>
+    
+    <div style="background: rgba(91,192,168,0.15); padding: 12px 28px; border-radius: 50px; margin-bottom: 40px; border: 1px solid rgba(91,192,168,0.3);">
+        <span style="font-size: 1rem; color: #9bc7bb; letter-spacing: 1px;">Kinematics And Dynamics of Particles</span>
+    </div>
+    
+	   <div style="margin-bottom: 25px;">
+        <span style="font-size: 0.85rem; color: #9bc7bb;">Instructor: <strong style="color: #f5d742;">Mr. Dagim</strong></span>
+    </div>
+    <!-- Prepared by line -->
+    <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(91,192,168,0.3); width: 80%;">
+        <p style="font-size: 0.85rem; color: #9bc7bb; margin: 5px 0;">
+            <strong style="color: #f5d742;">Prepared by Qeleme Exams - Learn. Practice. Win</strong>
+        </p>
+        <p style="font-size: 0.75rem; color: #6a9e8e; margin-top: 10px;">
+             Interactive Learning Resource 
+        </p>
+    </div>
+    
+    <!-- Decorative dots -->
+    <div style="position: absolute; bottom: 80px; left: 20px; opacity: 0.3;">
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+    </div>
+    <div style="position: absolute; top: 80px; right: 20px; opacity: 0.3;">
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Contents</div>
+    <div class="two-columns">
+        <div class="col">
+            <h3 style="color: #f5d742;">🔹 What is Mechanics?</h3>
+            <ul class="compact-list">
+                <li>Branches of Mechanics</li>
+                <li>Where is Mechanics Applied?</li>
+            </ul>
+            
+            <h3 style="color: #f5d742; margin-top: 15px;">🔹 Kinematics</h3>
+            <ul class="compact-list">
+                <li>Displacement, Velocity, and Acceleration in 1D and 2D</li>
+                <li>Motion with Constant Acceleration</li>
+                <li>Free Fall Motion</li>
+                <li>Projectile Motion</li>
+            </ul>
+            
+            <h3 style="color: #f5d742; margin-top: 15px;">🔹 Particle Dynamics and Planetary Motion</h3>
+            <ul class="compact-list">
+                <li>Concept of Force as a Measure of Interaction</li>
+                <li>Types of Forces</li>
+                <li>Newton's Laws of Motion and Applications</li>
+                <li>Forces of Friction</li>
+                <li>Uniform Circular Motion</li>
+                <li>Newton's Law of Universal Gravitation</li>
+                <li>Kepler's Laws, Satellite Motion and Weightlessness</li>
+            </ul>
+        </div>
+        
+        <div class="col">
+            <h3 style="color: #f5d742;">🔹 Work, Energy, and Linear Momentum</h3>
+            <ul class="compact-list">
+                <li>Work and Energy</li>
+                <li>Work–Energy Theorem</li>
+                <li>Mechanical Energy</li>
+                <li>Power</li>
+                <li>Conservation of Linear Momentum</li>
+                <li>Collisions</li>
+                <li>Center of Mass</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">What is Mechanics?</div>
+
+    <ul class="bullet-list">
+        <li>Mechanics → branch of physics that deals with <span class="blue-highlight">motion</span> and the <span class="red-highlight">forces</span> that cause it</li>
+        <li>Explains how objects move and what factors affect that motion:
+            <ul class="compact-list" style="margin-top: 8px;">
+                <li>Force</li>
+                <li>Mass</li>
+                <li>Momentum</li>
+                <li>Energy</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Branches of Mechanics</h2>
+    <div class="two-columns">
+        <div class="col">
+            <h3 style="color: #f5d742;">Based on Concept of Motion</h3>
+            <ul class="compact-list">
+                <li><span class="blue-highlight">Dynamics</span> → studies motion and its causes (forces)</li>
+                <li><span class="red-highlight">Kinematics</span> → describes motion without considering causes (no forces)</li>
+            </ul>
+        </div>
+        <div class="col">
+            <h3 style="color: #f5d742;">Based on System Studied</h3>
+            <ul class="compact-list">
+                <li><span class="blue-highlight">Particle Mechanics</span> → object so small that shape and internal structure do not affect the problem</li>
+                <li><span class="red-highlight">System of Particles</span> → two or more particles interacting with each other or with external forces</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Where is Mechanics Applied?</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Celestial Mechanics</span> → motions of stars, planets, satellites
+            <ul class="compact-list" style="margin-top: 5px;">
+                <li>These motions can be predicted with high accuracy thousands of years in advance</li>
+            </ul>
+        </li>
+        <li><span class="blue-highlight">Everyday Objects</span> → cars, bridges, aircraft, blood flow, etc.
+            <ul class="compact-list" style="margin-top: 5px;">
+                <li>Newton's laws work well here because objects move at speeds much less than the speed of light</li>
+            </ul>
+        </li>
+        <li><span class="blue-highlight">Atomic and Subatomic Scale</span> → atoms, molecules, radiation
+            <ul class="compact-list" style="margin-top: 5px;">
+                <li>Classical mechanics fails → quantum mechanics is needed</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Kinematics in One and Two Dimensions</div>
+    <div class="subhead">Describing Motion Without Forces</div>
+
+    <h2>What is Kinematics?</h2>
+    <ul class="bullet-list">
+        <li>Term "Kinematics" comes from Greek word <span class="blue-highlight">"kinesis"</span> → meaning motion</li>
+        <li>Related words:
+            <ul class="compact-list" style="margin-top: 5px;">
+                <li>Cinema → moving pictures</li>
+                <li>Kinesiology → study of human motion</li>
+            </ul>
+        </li>
+        <li><span class="red-highlight">Definition:</span> Kinematics is the branch of mechanics that describes motion <span class="blue-highlight">without considering its causes</span> (no forces involved)</li>
+    </ul>
+
+    <h2>What Does Kinematics Study?</h2>
+    <ul class="bullet-list">
+        <li>Kinematics focuses on analyzing <span class="blue-highlight">kinematical quantities</span>, such as:
+            <ul class="compact-list" style="margin-top: 5px;">
+                <li><span class="red-highlight">Displacement</span> → change in position</li>
+                <li><span class="red-highlight">Velocity</span> → rate of change of position</li>
+                <li><span class="red-highlight">Acceleration</span> → rate of change of velocity</li>
+                <li><span class="red-highlight">Time</span> → duration of motion</li>
+                <li><span class="red-highlight">Trajectory</span> → path of motion</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Examples of Motion Around Us</h2>
+    <ul class="bullet-list">
+        <li>Planets orbiting the Sun</li>
+        <li>Cars moving along a road</li>
+        <li>Blood flowing through veins</li>
+        <li>Athletes running on a track</li>
+    </ul>
+
+    <div class="callout">
+        <span class="blue-highlight">Why Start Physics with Kinematics?</span><br>
+        Before understanding <span class="red-highlight">why</span> objects move (Dynamics), we must first describe <span class="red-highlight">how</span> they move.
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Displacement, Velocity, and Acceleration in 1D and 2D</div>
+    <div class="subhead"> Kinematical Quantities</div>
+
+    <h2>Position (r)</h2>
+    <ul class="bullet-list">
+        <li>Position → tells us where an object is located relative to a <span class="blue-highlight">reference point</span> (origin)</li>
+        <li>Represented by:
+            <ul class="compact-list" style="margin-top: 5px;">
+                <li>In 1D → \(x\) or \(y\) coordinate</li>
+                <li>In 2D → position vector \(\vec{r} = (x, y)\)</li>
+            </ul>
+        </li>
+			
+
+        <li><span class="red-highlight">Note:</span> Position is always measured relative to a reference frame</li>
+    </ul>
+    <div class="callout">
+        <strong>Example:</strong> A car parked 5 m to the right of a traffic light (origin) → position = \(+5 \, \text{m}\) on the x-axis
+    </div>
+
+    <h2>Displacement (\(\Delta x\) or \(\Delta \vec{r}\))</h2>
+    <ul class="bullet-list">
+        <li>Displacement → <span class="blue-highlight">change in position</span> of an object during motion</li>
+        <li><span class="red-highlight">Vector quantity</span> → magnitude and direction</li>
+        <li>Depends only on initial and final positions, <span class="orange-highlight">not</span> on the path taken</li>
+        <li>Formulas:
+            <ul class="compact-list" style="margin-top: 5px;">
+                <li>1D motion: \(\Delta x = x_f - x_i\)</li>
+                <li>2D motion: \(\Delta \vec{r} = \vec{r}_f - \vec{r}_i\)</li>
+            </ul>
+        </li>
+		
+			 <div class="image-figure">
+        <img src="1D2d.png" alt=" " onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+    </div>	
+        <li>Properties:
+            <ul class="compact-list" style="margin-top: 5px;">
+                <li>Displacement can be <span class="blue-highlight">positive, negative, or zero</span></li>
+                <li>If object returns to starting point → \(\Delta x = 0\) (even if it traveled a long distance)</li>
+            </ul>
+        </li>
+    </ul>
+    <div class="math-block">
+        <strong>Example:</strong> A ball moves from \(x_i = 2 \, \text{m}\) to \(x_f = 10 \, \text{m}\):<br>
+        \(\Delta x = 10 - 2 = 8 \, \text{m}\) to the right
+    </div>
+
+    <h2>Distance (S)</h2>
+    <ul class="bullet-list">
+        <li>Distance → <span class="blue-highlight">total length of the path</span> traveled by the object</li>
+        <li><span class="red-highlight">Scalar quantity</span> (magnitude only, no direction)</li>
+    </ul>
+    <div class="callout">
+        <strong>Example:</strong> Running around a 400 m track and returning to start:<br>
+        • Distance = 400 m<br>
+        • Displacement = 0 m
+    </div>
+
+    <div class="math-block">
+        <strong>Key Difference:</strong><br>
+        • Distance → measures how much ground was covered<br>
+        • Displacement → measures how far final position is from initial position (straight line)
+    </div>
+
+  
+
+
+    <div class="subhead"> Average and Instantaneous Velocity</div>
+
+    <h2>Average Velocity (\(v_{av}\))</h2>
+    <ul class="bullet-list">
+        <li>Average velocity → overall rate of <span class="blue-highlight">displacement</span> during a time interval</li>
+        <li>Formula: \(v_{av} = \dfrac{\Delta \vec{r}}{\Delta t} = \dfrac{\vec{r}_f - \vec{r}_i}{t_f - t_i}\)</li>
+        <li><span class="red-highlight">Vector quantity</span> → magnitude and direction (same direction as displacement)</li>
+    </ul>
+  
+
+    <h2>Average Speed</h2>
+    <ul class="bullet-list">
+        <li>Formula: \(\text{speed}_{av} = \dfrac{S}{\Delta t}\) (total distance divided by total time)</li>
+        <li><span class="blue-highlight">Scalar quantity</span></li>
+    </ul>
+
+    <div class="callout">
+        <span class="red-highlight">Key point:</span> Average speed is always \(\geq\) magnitude of average velocity because distance \(\geq\) displacement.
+    </div>
+
+  <h2>Instantaneous Velocity (\(\vec{v}\))</h2>
+<ul class="bullet-list">
+    <li>Instantaneous velocity → velocity at a <span class="blue-highlight">specific moment</span> in time</li>
+    <li>Rate of change of position at that instant</li>
+    <li>Instantaneous velocity is the <span class="red-highlight">limiting value</span> of the ratio \(\frac{\Delta \vec{r}}{\Delta t}\) as \(\Delta t\) approaches zero</li>
+</ul>
+
+<div class="math-block">
+    \(\vec{v} = \lim_{\Delta t \to 0} \frac{\Delta \vec{r}}{\Delta t}\)
+</div>
+
+<ul class="bullet-list">
+    <li>Expression using derivative: \(v = \dfrac{d\vec{r}}{dt}\) (derivative of position with respect to time)</li>
+    <li><span class="orange-highlight">Graphical meaning:</span> slope of the position-time graph at a given point</li>
+    <li><span class="blue-highlight">Instantaneous speed:</span> magnitude of the instantaneous velocity</li>
+</ul>
+
+
+    <h2>Instantaneous Speed</h2>
+    <ul class="bullet-list">
+        <li>The <span class="blue-highlight">magnitude</span> of instantaneous velocity</li>
+        <li>Always positive</li>
+    </ul>
+
+
+
+    <div class="subhead"> Average and Instantaneous Acceleration</div>
+
+    <h2>Average Acceleration (\(a_{av}\))</h2>
+    <ul class="bullet-list">
+        <li>Average acceleration → rate of change of <span class="blue-highlight">velocity</span> over a time interval</li>
+        <li>Formula: \(a_{av} = \dfrac{\Delta \vec{v}}{\Delta t} = \dfrac{\vec{v}_f - \vec{v}_i}{t_f - t_i}\)</li>
+        <li><span class="red-highlight">Vector quantity</span> → magnitude and direction</li>
+        <li>If velocity increases → acceleration is <span class="blue-highlight">positive</span></li>
+        <li>If velocity decreases → acceleration is <span class="orange-highlight">negative</span> (deceleration or retardation)</li>
+    </ul>
+
+ <h2>Instantaneous Acceleration (\(a\))</h2>
+<ul class="bullet-list">
+    <li>Instantaneous acceleration → acceleration at a <span class="blue-highlight">specific instant</span> of time</li>
+    <li>Instantaneous acceleration is the <span class="red-highlight">limiting value</span> of the ratio \(\frac{\Delta \vec{v}}{\Delta t}\) as \(\Delta t\) approaches zero</li>
+</ul>
+
+<div class="math-block">
+    \(\vec{a} = \lim_{\Delta t \to 0} \frac{\Delta \vec{v}}{\Delta t}\)
+</div>
+
+<ul class="bullet-list">
+    <li>Expression using derivative: \(a = \dfrac{d\vec{v}}{dt}\) (rate of change of velocity with respect to time)</li>
+    <li><span class="orange-highlight">Graphical meaning:</span> slope of the velocity-time graph at a given point</li>
+</ul>
+
+ 
+</div>
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Exercise</div>
+    <div class="callout">
+        A person walks first at a constant speed of 5 m/s along a straight line from point A to point B, and then back along the same line from B to A at a constant speed of 3 m/s.
+ 
+
+    <ul class="bullet-list">
+        <li>a) What is his <span class="blue-highlight">average speed</span> over the entire trip?</li>
+        <li>b) What is his <span class="red-highlight">average velocity</span> over the entire trip?</li>
+    </ul>
+
+
+        <strong>Solution (a):</strong><br>
+        \(v_{av} = \dfrac{\text{total distance }(S)}{\text{total time interval }(\Delta t)}\)<br><br>
+        Total distance covered = \(S_{AB} + S_{BA} = 2x\)<br><br>
+        \(v_{av} = \dfrac{S_{tot}}{t_{tot}} = \dfrac{S_{AB} + S_{BA}}{t_{AB} + t_{BA}}\)<br><br>
+        \(t_{AB} = \dfrac{x}{v_{AB}} = \dfrac{x}{5 \, \text{m/s}}\)<br><br>
+        \(t_{BA} = \dfrac{x}{v_{BA}} = \dfrac{x}{3 \, \text{m/s}}\)<br><br>
+        \(v_{av} = \dfrac{2x}{\left(\dfrac{x}{5} + \dfrac{x}{3}\right)} = 2x \left( \dfrac{15}{8x} \right) = \dfrac{15}{4} = 3.75 \, \text{m/s}\)
+  
+
+    
+        <strong>Solution (b):</strong><br>
+        Average velocity over the entire trip = <span class="blue-highlight">zero</span><br><br>
+        \(\vec{r}_f = \vec{r}_i \quad \rightarrow \quad \Delta \vec{r} = \vec{r}_f - \vec{r}_i = 0\)<br><br>
+        \(\vec{v}_{av} = \dfrac{\Delta \vec{r}}{\Delta t} = \dfrac{\vec{r}_f - \vec{r}_i}{t_f - t_i} = 0\)
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Motion with Constant Acceleration</div>
+
+    <ul class="bullet-list">
+        <li>When an object moves with constant acceleration → velocity changes at a <span class="blue-highlight">constant rate</span> over time</li>
+        <li>This allows us to derive simple, widely-used equations for both 1D and 2D motion</li>
+    </ul>
+
+    <h2>Velocity and Acceleration</h2>
+    <ul class="bullet-list">
+        <li>For constant acceleration: \(a = \dfrac{\Delta v}{\Delta t} = \dfrac{v_f - v_i}{t}\) (assuming initial time \(t_i = 0\))</li>
+        <li>Rearranging, we get the <span class="blue-highlight">first equation of motion</span>:</li>
+    </ul>
+    <div class="math-block">
+        \(v_f = v_i + a t\)
+    </div>
+    <ul class="bullet-list">
+        <li>Where:
+            <ul class="compact-list">
+                <li>\(v_i\) = initial velocity</li>
+                <li>\(v_f\) = final velocity</li>
+                <li>\(a\) = constant acceleration</li>
+                <li>\(t\) = time interval</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Average Velocity and Displacement</h2>
+    <ul class="bullet-list">
+        <li>Average velocity under constant acceleration:</li>
+    </ul>
+    <div class="math-block">
+        \(v_{avg} = \dfrac{v_i + v_f}{2}\)
+    </div>
+    <ul class="bullet-list">
+        <li>Displacement: \(\Delta r = v_{avg} \times t\)</li>
+        <li>Substitute \(v_{avg}\): \(\Delta r = \dfrac{v_i + v_f}{2} \times t\)</li>
+        <li>Using \(v_f = v_i + a t\), we get the <span class="blue-highlight">second equation of motion</span>:</li>
+    </ul>
+    <div class="math-block">
+        \(\Delta r = v_i t + \dfrac{1}{2} a t^2\)
+    </div>
+
+    <h2>Derivation of \(v_f^2 = v_i^2 + 2a\Delta r\)</h2>
+    <ul class="bullet-list">
+        <li><strong>Step 1:</strong> Start from the first two equations:
+            <ul class="compact-list">
+                <li>\(v_f = v_i + a t\)</li>
+                <li>\(\Delta r = v_i t + \frac{1}{2} a t^2\)</li>
+            </ul>
+        </li>
+        <li><strong>Step 2:</strong> Solve the first equation for \(t\): \(t = \dfrac{v_f - v_i}{a}\)</li>
+        <li><strong>Step 3:</strong> Substitute \(t\) into displacement equation:</li>
+    </ul>
+    <div class="math-block">
+        \(\Delta r = v_i \left(\dfrac{v_f - v_i}{a}\right) + \dfrac{1}{2} a \left(\dfrac{v_f - v_i}{a}\right)^2\)
+    </div>
+    <ul class="bullet-list">
+        <li><strong>Step 4:</strong> Simplify the first term: \(\dfrac{v_i(v_f - v_i)}{a}\)</li>
+        <li><strong>Step 5:</strong> Simplify the second term: \(\dfrac{1}{2} \cdot \dfrac{(v_f - v_i)^2}{a}\)</li>
+        <li><strong>Step 6:</strong> Combine both terms and factor:</li>
+    </ul>
+    <div class="math-block">
+        \(\Delta r = \dfrac{(v_f - v_i)(v_f + v_i)}{2a}\)
+    </div>
+    <ul class="bullet-list">
+        <li><strong>Step 7:</strong> Multiply both sides by \(2a\):</li>
+    </ul>
+    <div class="math-block">
+        \(2a\Delta r = (v_f - v_i)(v_f + v_i) = v_f^2 - v_i^2\)
+    </div>
+    <ul class="bullet-list">
+        <li><strong>Step 8:</strong> Therefore:</li>
+    </ul>
+    <div class="math-block">
+        \(v_f^2 = v_i^2 + 2a\Delta r\)
+    </div>
+
+    <h2>Equations for 2D Motion</h2>
+    <ul class="bullet-list">
+        <li>For motion in two dimensions:
+            <ul class="compact-list">
+                <li>Acceleration vector: \(\vec{a} = a_x \hat{i} + a_y \hat{j}\)</li>
+                <li>Initial velocity: \(\vec{v}_i = v_{x,i} \hat{i} + v_{y,i} \hat{j}\)</li>
+                <li>Final velocity: \(\vec{v}_f = v_{x,f} \hat{i} + v_{y,f} \hat{j}\)</li>
+            </ul>
+        </li>
+        <li>Velocity components:</li>
+    </ul>
+    <div class="math-block">
+        \(v_{x,f} = v_{x,i} + a_x t\)<br>
+        \(v_{y,f} = v_{y,i} + a_y t\)
+    </div>
+    <ul class="bullet-list">
+        <li>Displacement components:</li>
+    </ul>
+    <div class="math-block">
+        \(\Delta x = v_{x,i} t + \dfrac{1}{2} a_x t^2\)<br>
+        \(\Delta y = v_{y,i} t + \dfrac{1}{2} a_y t^2\)
+    </div>
+    <ul class="bullet-list">
+        <li>Total displacement: \(\Delta r = \sqrt{(\Delta x)^2 + (\Delta y)^2}\)</li>
+    </ul>
+    <div class="callout">
+        <span class="blue-highlight">Tip:</span> Treat each component as independent 1D motion.
+    </div>
+
+    <h2>Summary of Key Equations</h2>
+    <ul class="bullet-list">
+        <li>\(v_f = v_i + a t\)</li>
+        <li>\(\Delta r = v_i t + \dfrac{1}{2} a t^2\)</li>
+        <li>\(v_f^2 = v_i^2 + 2a\Delta r\)</li>
+        <li>\(v_{avg} = \dfrac{v_i + v_f}{2}\)</li>
+        <li>2D motion → apply formulas separately to x and y components</li>
+    </ul>
+</div>
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Examples</div>
+
+    <div class="callout">
+        <span class="blue-highlight">Example 1:</span> A truck covers 40 m in 8.5 s while smoothly slowing down to a final speed of 2.8 m/s. Find:<br>
+        a) Its original speed<br>
+        b) Its acceleration <br><br>
+   
+        <strong>Solution:</strong><br>
+        Given: \(S = 40 \, \text{m}\), \(t = 8.5 \, \text{s}\), \(v_f = 2.8 \, \text{m/s}\)<br><br>
+        Average velocity: \(v_{av} = \dfrac{v_f + v_i}{2}\)<br><br>
+        Displacement: \(S = \left(\dfrac{v_f + v_i}{2}\right) t \quad \rightarrow \quad v_i = \dfrac{2S}{t} - v_f\)<br><br>
+        a) \(v_i = \dfrac{2(40 \, \text{m})}{8.5 \, \text{s}} - 2.8 \, \text{m/s} = 9.41 \, \text{m/s} - 2.8 \, \text{m/s} = 6.61 \, \text{m/s}\)<br><br>
+        b) \(a = \dfrac{v_f - v_i}{t} = \dfrac{2.8 \, \text{m/s} - 6.61 \, \text{m/s}}{8.5 \, \text{s}} = -0.448 \, \text{m/s}^2\) (deceleration)
+    </div>
+<br>
+    <div class="callout">
+        <span class="blue-highlight">Example 2:</span> A jet plane lands with a speed of 100 m/s and slows down at a rate of 5 m/s² as it comes to rest.<br>
+        a) What is the time interval needed by the jet to come to rest?<br>
+        b) Can this jet land on an airport where the runway is 0.8 km long? <br><br>
+ 
+        <strong>Solution:</strong><br>
+        Given: \(v_i = 100 \, \text{m/s}\), \(a = -5 \, \text{m/s}^2\), \(v_f = 0\)<br><br>
+        a) \(a = \dfrac{v_f - v_i}{t} \quad \rightarrow \quad t = \dfrac{v_f - v_i}{a} = \dfrac{0 - 100}{-5} = 20 \, \text{s}\)<br><br>
+        b) Distance required to stop: \(S = \left(\dfrac{v_f + v_i}{2}\right) t = \left(\dfrac{0 + 100}{2}\right) \times 20 = 1000 \, \text{m} = 1 \, \text{km}\)<br><br>
+        The jet <span class="red-highlight">cannot land</span> because the runway (0.8 km) is shorter than the distance required (1 km).
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Free Fall Motion</div>
+    <div class="subhead">Motion Under Gravity</div>
+
+    <h2>What is Free Fall?</h2>
+    <ul class="bullet-list">
+        <li>Free fall → motion of an object near the surface of the Earth when the <span class="blue-highlight">only force</span> acting on it is gravity</li>
+        <li>If we ignore air resistance → all objects fall with the same constant acceleration called <span class="red-highlight">acceleration due to gravity (g)</span></li>
+    </ul>
+
+    <h2>Key Facts about g</h2>
+    <ul class="bullet-list">
+        <li>On Earth's surface, the standard value is <span class="blue-highlight">\(g = 9.8 \, \text{m/s}^2\)</span></li>
+        <li>\(g\) is <span class="red-highlight">not exactly constant</span> everywhere:
+            <ul class="compact-list">
+                <li>Greater at the poles than at the equator</li>
+                <li>Greater at sea level than at the top of a mountain</li>
+                <li>Can slightly vary due to local geology</li>
+            </ul>
+        </li>
+        <li>For most practical purposes (up to about 16 km altitude) → take \(g = 9.8 \, \text{m/s}^2\)</li>
+    </ul>
+
+    <div class="callout">
+        <span class="blue-highlight">Example:</span> A girl throws a ball upwards, giving it an initial speed \(u = 15 \, \text{m/s}\). Neglect air resistance.<br>
+        (a) How long does the ball take to return to the girl's hand?<br>
+        (b) What will be its velocity then?
+		
+			
+	 <div class="image-figure">
+        <img src="girlfreefall.png" alt=" " onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+    </div>
+    </div>
+
+    <div class="math-block">
+        <strong>Solution (a):</strong><br>
+        Choose positive y upward with origin at the girl's hand → \(y_i = 0\)<br>
+        Acceleration is negative (downward): \(a = -g = -9.8 \, \text{m/s}^2\)<br><br>
+        When ball returns to hand → \(y = 0\)<br>
+        Using \(y - y_i = ut - \frac{1}{2}gt^2\):<br>
+        \(0 = (15 \, \text{m/s})t - \frac{1}{2}(9.8 \, \text{m/s}^2)t^2\)<br>
+        \(0 = t \left(15 - \frac{1}{2} \times 9.8 \times t\right)\)<br>
+        \(t = \dfrac{2 \times 15}{9.8} = 3.1 \, \text{s}\)
+    </div>
+
+    <div class="math-block">
+        <strong>Solution (b):</strong><br>
+        Using \(v^2 = u^2 - 2g(y - y_i)\):<br>
+        Since \(y = y_i = 0\):<br>
+        \(v^2 = u^2 = (15)^2 = 225\)<br>
+        \(v = \pm 15 \, \text{m/s}\)<br><br>
+        Select <span class="red-highlight">negative sign</span> because the ball is moving downward just before returning to the girl's hand → \(v = -15 \, \text{m/s}\)
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Projectile Motion</div>
+    <div class="subhead">Motion of a Projectile</div>
+
+    <h2>What is Projectile Motion?</h2>
+    <ul class="bullet-list">
+        <li>Projectile → any object thrown obliquely into space that follows a path determined by <span class="blue-highlight">gravitational force</span> acting on it</li>
+        <li>Examples:
+            <ul class="compact-list">
+                <li>Stone projected at an angle</li>
+                <li>Bomb released from an airplane</li>
+                <li>Shot fired from a gun</li>
+                <li>Shot put or javelin thrown by an athlete</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="image-figure">
+        <img src="projectile_diagram.png" alt="Projectile motion diagram showing trajectory, velocity components, maximum height, and range" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Figure: Motion of a projectile – trajectory, velocity components, maximum height (h), and range (R)</div>
+        <div class="image-placeholder-note" style="display:none;">[projectile_diagram.png]</div>
+    </div>
+
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Velocity of Projection (u)</span> → velocity with which the body is projected</li>
+        <li><span class="blue-highlight">Angle of Projection (θ)</span> → angle between direction of projection and horizontal plane</li>
+        <li><span class="blue-highlight">Trajectory (OAB)</span> → path described by projectile from point of projection to where it reaches the horizontal plane → trajectory is a <span class="red-highlight">parabola</span></li>
+    </ul>
+
+    <h2>Basic Assumptions in Projectile Motion</h2>
+    <ul class="bullet-list">
+        <li>Free fall acceleration \(g\) is <span class="blue-highlight">constant</span> over the range of motion and directed downward</li>
+        <li>Effect of <span class="red-highlight">air resistance is negligible</span></li>
+        <li>With these assumptions → path of projectile is a downward parabola</li>
+    </ul>
+
+    <h2>Components of Motion</h2>
+	 <div class="image-figure">
+        <img src="projectile_components.png" alt="Projectile motion components showing u_x, u_y, and trajectory" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-placeholder-note" style="display:none;">[projectile_components.png]</div>
+    </div>
+    <ul class="bullet-list">
+        <li>\(u_x = u \cos \theta\) → component of velocity along x-axis</li>
+        <li>\(u_y = u \sin \theta\) → component of velocity along y-axis</li>
+        <li>\(a_x = 0\) → no force acting horizontally</li>
+        <li>\(a_y = -g\) → acceleration due to gravity (downward)</li>
+    </ul>
+
+    <h2>Horizontal Position (x_f)</h2>
+    <ul class="bullet-list">
+        <li>Using equation: \(\Delta x = u_x t + \frac{1}{2} a_x t^2\)</li>
+        <li>Assuming projectile starts at origin \((x_i, y_i) = (0, 0)\)</li>
+        <li>Since \(a_x = 0\) and \(u_x = u \cos \theta\):</li>
+    </ul>
+    <div class="math-block">
+        \(x_f = u \cos \theta \cdot t + \frac{1}{2}(0)t^2 = u \cos \theta \cdot t\)
+    </div>
+
+    <h2>Vertical Position (y_f)</h2>
+    <ul class="bullet-list">
+        <li>Using equation: \(\Delta y = u_y t + \frac{1}{2} a_y t^2\)</li>
+        <li>\(u_y = u \sin \theta\) and \(a_y = -g\):</li>
+    </ul>
+    <div class="math-block">
+        \(y_f = u \sin \theta \cdot t - \frac{1}{2} g t^2\)
+    </div>
+
+    <h2>Horizontal Velocity (v_x)</h2>
+    <ul class="bullet-list">
+        <li>Using equation: \(v_x = u_x + a_x t\)</li>
+        <li>Since \(a_x = 0\) and \(u_x = u \cos \theta\):</li>
+    </ul>
+    <div class="math-block">
+        \(v_x = u \cos \theta\) (constant throughout motion)
+    </div>
+
+    <h2>Vertical Velocity (v_y)</h2>
+    <ul class="bullet-list">
+        <li>Using equation: \(v_y = u_y + a_y t\)</li>
+        <li>\(u_y = u \sin \theta\) and \(a_y = -g\):</li>
+    </ul>
+    <div class="math-block">
+        \(v_y = u \sin \theta - g t\)
+    </div>
+
+    <h2>Maximum Height (h)</h2>
+    <ul class="bullet-list">
+        <li>At maximum height → vertical velocity becomes zero: \(v_y = 0\)</li>
+        <li>\(0 = u \sin \theta - g t\) → \(t = \dfrac{u \sin \theta}{g}\) (time to reach maximum height)</li>
+        <li>Substitute this time into vertical position equation:</li>
+    </ul>
+    <div class="math-block">
+        \(h = u \sin \theta \left(\dfrac{u \sin \theta}{g}\right) - \dfrac{1}{2} g \left(\dfrac{u \sin \theta}{g}\right)^2\)
+    </div>
+    <div class="math-block">
+        \(h = \dfrac{u^2 \sin^2 \theta}{g} - \dfrac{1}{2} \dfrac{u^2 \sin^2 \theta}{g} = \dfrac{u^2 \sin^2 \theta}{2g}\)
+    </div>
+
+    <h2>Time of Flight (T)</h2>
+    <ul class="bullet-list">
+        <li>Total time of flight = twice the time to reach maximum height (symmetrical motion)</li>
+    </ul>
+    <div class="math-block">
+        \(T = 2 \times \dfrac{u \sin \theta}{g} = \dfrac{2u \sin \theta}{g}\)
+    </div>
+
+    <h2>Horizontal Range (R)</h2>
+    <ul class="bullet-list">
+        <li>Range = horizontal velocity × total time of flight</li>
+    </ul>
+    <div class="math-block">
+        \(R = (u \cos \theta) \times \left(\dfrac{2u \sin \theta}{g}\right) = \dfrac{2u^2 \sin \theta \cos \theta}{g}\)
+    </div>
+    <ul class="bullet-list">
+        <li>Using trigonometric identity: \(2 \sin \theta \cos \theta = \sin 2\theta\)</li>
+    </ul>
+    <div class="math-block">
+        \(R = \dfrac{u^2 \sin 2\theta}{g}\)
+    </div>
+    <ul class="bullet-list">
+        <li>Range is <span class="blue-highlight">maximum</span> when \(\sin 2\theta = 1\) → \(2\theta = 90^\circ\) → \(\theta = 45^\circ\)</li>
+    </ul>
+    <div class="math-block">
+        \(R_{\text{max}} = \dfrac{u^2}{g}\)
+    </div>
+
+
+    <h2> Summary</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Quantity</th>
+                <th>Formula</th>
+                <th>Explanation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Horizontal displacement</td>
+                <td>\(x = (u \cos \theta) t\)</td>
+                <td>Increases linearly with time</td>
+            </tr>
+            <tr>
+                <td>Vertical displacement</td>
+                <td>\(y = (u \sin \theta) t - \frac{1}{2} g t^2\)</td>
+                <td>Parabolic path</td>
+            </tr>
+            <tr>
+                <td>Horizontal velocity</td>
+                <td>\(v_x = u \cos \theta\)</td>
+                <td>Constant</td>
+            </tr>
+            <tr>
+                <td>Vertical velocity</td>
+                <td>\(v_y = u \sin \theta - g t\)</td>
+                <td>Changes linearly with time</td>
+            </tr>
+            <tr>
+                <td>Maximum height (h)</td>
+                <td>\(h = \dfrac{u^2 \sin^2 \theta}{2g}\)</td>
+                <td>Where \(v_y = 0\)</td>
+            </tr>
+            <tr>
+                <td>Time of flight (T)</td>
+                <td>\(T = \dfrac{2u \sin \theta}{g}\)</td>
+                <td>Symmetric rise and fall</td>
+            </tr>
+            <tr>
+                <td>Range (R)</td>
+                <td>\(R = \dfrac{u^2 \sin 2\theta}{g}\)</td>
+                <td>Maximum at \(\theta = 45^\circ\)</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+   
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Projectile Motion Examples</div>
+
+    <div class="callout">
+        <span class="blue-highlight">Example 1:</span> A rocket is fired with an initial velocity of 100 m/s at an angle of 55° above the horizontal. It explodes on the mountain side 12 s after its firing. What are the x- and y-coordinates of the rocket relative to its firing point?
+   <br><br>
+        <strong>Solution:</strong><br>
+        Given: \(u = 100 \, \text{m/s}\), \(\theta = 55^\circ\), \(t = 12 \, \text{s}\)<br><br>
+        <strong>Horizontal position (x):</strong><br>
+        \(x(t) = u \cos \theta \cdot t\)<br>
+        \(x = (100 \, \text{m/s}) \times \cos 55^\circ \times (12 \, \text{s})\)<br>
+        \(\cos 55^\circ = 0.5736\)<br>
+        \(x = 100 \times 0.5736 \times 12\)<br>
+        \(x = 688.3 \, \text{m}\)<br><br>
+        <strong>Vertical position (y):</strong><br>
+        \(y(t) = u \sin \theta \cdot t - \frac{1}{2} g t^2\)<br>
+        \(\sin 55^\circ = 0.8192\)<br>
+        \(y = (100 \times 0.8192 \times 12) - \frac{1}{2} \times 9.8 \times (12)^2\)<br>
+        \(y = 983.0 - \frac{1}{2} \times 9.8 \times 144\)<br>
+        \(y = 983.0 - 705.6\)<br>
+        \(y = 277.4 \, \text{m}\)<br><br>
+        <span class="blue-highlight">Answer:</span> The rocket is at \((688.3 \, \text{m}, 277.4 \, \text{m})\) relative to its firing point.
+    </div>
+<br>
+    <div class="callout">
+        <span class="blue-highlight">Example 2:</span> A plane drops a package to a party of explorers. If the plane is traveling horizontally at 40 m/s and is 100 m above the ground, where does the package strike the ground relative to the point at which it is released?
+  	 <div class="image-figure">
+        <img src="plan.png" alt=" " onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+    </div>
+<br><br>
+        <strong>Solution:</strong><br>
+        Given: \(u = u_x = 40 \, \text{m/s}\), \(\theta = 0^\circ\), vertical displacement \(y = -100 \, \text{m}\) (below the reference point)<br><br>
+        <strong>Step 1: Find the time of flight using the vertical motion equation</strong><br>
+        \(y(t) = u \sin \theta \cdot t - \frac{1}{2} g t^2\)<br>
+        Since \(\theta = 0^\circ\), \(\sin 0^\circ = 0\):<br>
+        \(y(t) = 0 - \frac{1}{2} g t^2\)<br>
+        \(-100 = -\frac{1}{2} \times 9.8 \times t^2\)<br>
+        \(-100 = -4.9 \, t^2\)<br>
+        \(t^2 = \frac{100}{4.9} = 20.41\)<br>
+        \(t = \sqrt{20.41} = 4.52 \, \text{s}\)<br><br>
+        <strong>Step 2: Find the horizontal displacement</strong><br>
+        \(x(t) = u \cos \theta \cdot t = u_x \cdot t\) (since \(\cos 0^\circ = 1\))<br>
+        \(x = 40 \, \text{m/s} \times 4.52 \, \text{s}\)<br>
+        \(x = 180.8 \, \text{m}\)<br><br>
+        <span class="blue-highlight">Answer:</span> The package strikes the ground 181 m from the release point.
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Particle Dynamics and Planetary Motion</div>
+    <div class="subhead">What Causes Motion?</div>
+
+    <ul class="bullet-list">
+        <li>In kinematics → studied motion using displacement, velocity, and acceleration</li>
+        <li>We did not ask: <span class="blue-highlight">what causes motion or changes in motion?</span></li>
+        <li>Now we focus on:
+            <ul class="compact-list">
+                <li>What makes objects remain at rest or accelerate?</li>
+                <li>What keeps planets in motion around the Sun?</li>
+            </ul>
+        </li>
+        <li><span class="red-highlight">Answer:</span> Mass of the object and the forces acting on it</li>
+    </ul>
+
+    <h2>Why Newton's Laws Matter</h2>
+    <ul class="bullet-list">
+        <li>Explain most motions in everyday life</li>
+        <li>Analyze static structures (bridges, buildings)</li>
+        <li>Study planetary motion → Newton developed his laws to explain Kepler's laws</li>
+    </ul>
+
+    <h2>Force</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Force</span> → any interaction that can change the motion of an object</li>
+        <li>A force can:
+            <ul class="compact-list">
+                <li>Start or stop motion</li>
+                <li>Change speed or direction of motion</li>
+                <li>Change the shape or size of an object</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Net Force (F<sub>net</sub>)</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Net force</span> → vector sum of all forces acting on an object</li>
+        <li>An object accelerates <span class="red-highlight">only if</span> the net force ≠ 0</li>
+        <li>If F<sub>net</sub> = 0 → object is either at rest or moving with constant velocity (Newton's 1st Law)</li>
+    </ul>
+</div>
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Concept of Force as a Measure of Interaction</div>
+
+    <ul class="bullet-list">
+        <li>All forces come from <span class="blue-highlight">four fundamental interactions</span>:
+            <ul class="compact-list">
+                <li>Gravitational Force</li>
+                <li>Electromagnetic Force</li>
+                <li>Strong Nuclear Force</li>
+                <li>Weak Nuclear Force</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Each Fundamental Force is Described By</h2>
+    <ul class="bullet-list">
+        <li>The type of particles that feel the force</li>
+        <li>Its relative strength</li>
+        <li>Its range (short or infinite)</li>
+        <li>The kind of particles that carry (mediate) the force</li>
+    </ul>
+
+    <div class="callout">
+        <span class="blue-highlight">Key Insight:</span> Every force in nature (friction, tension, normal force) is just a result of these fundamental forces.
+    </div>
+</div>
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Types of Forces</div>
+
+    <div class="two-columns">
+        <div class="col">
+            <h3 style="color: #f5d742;">Contact Forces</h3>
+            <ul class="compact-list">
+                Require <span class="blue-highlight">physical contact</span>
+                <li>Muscular Force</li>
+                <li>Frictional Force</li>
+                <li>Normal Force</li>
+                <li>Applied Force</li>
+                <li>Tension Force</li>
+                <li>Spring Force</li>
+                <li>Air Resistance (Drag Force)</li>
+            </ul>
+        </div>
+        <div class="col">
+            <h3 style="color: #f5d742;">Non-Contact Forces</h3>
+            <ul class="compact-list">
+            Act <span class="blue-highlight">at a distance</span>
+                <li>Gravitational Force</li>
+                <li>Magnetic Force</li>
+                <li>Electrostatic Force</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Contact Forces</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Muscular Force</span> → produced by muscles; exists only when in contact with an object → breathing, lifting, pushing, pulling</li>
+        <li><span class="blue-highlight">Frictional Force</span> → opposes motion between two surfaces in contact; acts opposite to direction of motion → lighting a matchstick, stopping a moving ball</li>
+        <li><span class="blue-highlight">Normal Force</span> → perpendicular force exerted by a surface on an object resting on it → book on a table</li>
+        <li><span class="blue-highlight">Applied Force</span> → force applied by a person or object to another object → pushing a table</li>
+        <li><span class="blue-highlight">Tension Force</span> → force in a stretched rope, string, or cable; pulls equally at both ends → pulling a bucket with a rope</li>
+        <li><span class="blue-highlight">Spring Force</span> → force exerted by a stretched or compressed spring; can be push or pull → trampoline</li>
+        <li><span class="blue-highlight">Air Resistance (Drag Force)</span> → frictional force acting on objects moving through air; resists motion → parachute slowing a skydiver</li>
+    </ul>
+
+    <h2>Non-Contact Forces</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Gravitational Force</span> → attractive force between any two masses → \(F \propto \dfrac{m_1 m_2}{r^2}\) → water drops falling, planets orbiting the Sun</li>
+        <li><span class="blue-highlight">Magnetic Force</span> → force exerted by magnets on magnetic materials or other magnets → magnet attracting an iron nail</li>
+        <li><span class="blue-highlight">Electrostatic Force</span> → force between electrically charged bodies; attractive (opposite charges) or repulsive (like charges) → rubbed balloon sticking to a wall</li>
+    </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Newton's Laws of Motion</div>
+    <div class="subhead">Foundations of Classical Mechanics</div>
+
+    <ul class="bullet-list">
+        <li>First formulated by <span class="blue-highlight">Sir Isaac Newton in 1687</span></li>
+        <li>Developed to explain why planets move in elliptical orbits instead of perfect circles</li>
+        <li><span class="red-highlight">Limitations:</span> Does not fully apply to very tiny particles (electrons) or objects moving near the speed of light</li>
+    </ul>
+
+    <h2>1. Newton's First Law of Motion (Law of Inertia)</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Statement:</span> An object will remain at rest, or move with constant velocity in a straight line, unless acted upon by an external force</li>
+        <li><span class="blue-highlight">Inertia</span> → tendency of an object to resist any change in its motion</li>
+        <li>Object at rest will not move until a force acts on it</li>
+        <li>Object in motion keeps moving in the same direction and speed unless something stops or changes it</li>
+        <li><span class="blue-highlight">Examples:</span> Book on a table stays still until pushed; car on highway would keep going forever without friction and air resistance</li>
+        <li><span class="blue-highlight">No net force = constant velocity:</span> If forces balance out (net force = 0) → object at rest stays at rest, object in motion continues at constant velocity</li>
+    </ul>
+
+    <h2>2. Newton's Second Law of Motion</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Statement:</span> The acceleration acquired by a point particle is directly proportional to the net force acting on it and inversely proportional to its mass. The acceleration is always in the direction of the net force.</li>
+        <li><span class="blue-highlight">Direct proportionality:</span> greater net force → greater acceleration</li>
+        <li><span class="blue-highlight">Inverse proportionality:</span> greater mass → less acceleration for the same force</li>
+    </ul>
+
+    <div class="math-block">
+        \(\sum F = m \times a\)<br>
+        \(\sum F\) → net force (N), \(m\) → mass (kg), \(a\) → acceleration (m/s²)
+    </div>
+
+    <ul class="bullet-list">
+        <li>When net force = 0 → acceleration = 0 → matches First Law</li>
+    </ul>
+
+    <div class="math-block">
+        <strong>Example 1:</strong> A box with mass 40 kg is at rest on a frictionless floor. You apply a 20 N force horizontally. What is the acceleration?<br><br>
+        <strong>Step 1: Identify known values</strong><br>
+        Mass \(m = 40 \, \text{kg}\)<br>
+        Force \(F = 20 \, \text{N}\)<br>
+        Friction = 0<br><br>
+        <strong>Step 2: Use Newton's Second Law</strong><br>
+        \(F = m \times a\)<br>
+        \(a = \dfrac{F}{m}\)<br><br>
+        <strong>Step 3: Substitute values</strong><br>
+        \(a = \dfrac{20 \, \text{N}}{40 \, \text{kg}} = 0.5 \, \text{m/s}^2\)
+    </div>
+<br>
+    <div class="math-block">
+        <strong>Example 2:</strong> A 3 kg object undergoes acceleration \(a = (2i + 5j) \, \text{m/s}^2\). Find the magnitude of the resultant force.<br><br>
+        <strong>Step 1: Identify known values</strong><br>
+        Mass \(m = 3 \, \text{kg}\)<br>
+        Acceleration \(a = (2i + 5j) \, \text{m/s}^2\)<br><br>
+        <strong>Step 2: Apply \(F = m \times a\)</strong><br>
+        \(F = 3 \times (2i + 5j)\)<br>
+        \(F = (6i + 15j) \, \text{N}\)<br><br>
+        <strong>Step 3: Magnitude formula</strong><br>
+        \(|F| = \sqrt{F_x^2 + F_y^2}\)<br><br>
+        <strong>Step 4: Substitute components</strong><br>
+        \(|F| = \sqrt{(6)^2 + (15)^2}\)<br><br>
+        <strong>Step 5: Calculate</strong><br>
+        \(|F| = \sqrt{36 + 225} = \sqrt{261} = 16.15 \, \text{N}\)
+    </div>
+
+    <h2>3.Newton's Third Law of Motion</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Statement:</span> For every action, there is always an equal and opposite reaction</li>
+        <li>When two bodies interact → they apply forces on each other</li>
+        <li>These forces are <span class="blue-highlight">equal in magnitude</span> but <span class="red-highlight">opposite in direction</span></li>
+        <li>Action and reaction forces always come in <span class="blue-highlight">pairs</span></li>
+    </ul>
+
+    <div class="math-block">
+        \(F_{AB} = -F_{BA}\) &nbsp;&nbsp; or &nbsp;&nbsp; \(F_{AB} + F_{BA} = 0\)
+    </div>
+
+    <ul class="bullet-list">
+        <li><span class="red-highlight">Important:</span> Action and reaction forces act on <span class="blue-highlight">different bodies</span>, not on the same body</li>
+        <li>Book on a table → weight and normal force balance out (net force = 0) but are <span class="red-highlight">not action-reaction pairs</span></li>
+        <li>True reaction to book's weight → Earth being pulled upward by the book</li>
+    </ul>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Forces of Friction</div>
+    <div class="subhead">Resisting Relative Motion</div>
+
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Friction</span> → contact force that resists the relative motion (or tendency of motion) between two surfaces in contact</li>
+        <li>When two objects touch → a frictional force develops at their interface</li>
+        <li>This force depends mainly on:
+            <ul class="compact-list">
+                <li>Surface texture (smooth vs rough)</li>
+                <li>Normal force (N) → force pressing the two surfaces together</li>
+            </ul>
+        </li>
+        <li>Without friction → walking, driving, or even holding objects would be impossible</li>
+    </ul>
+
+    <h2>Dependence of Friction on Normal Force</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Normal force (N)</span> → force perpendicular to the surface</li>
+        <li>Friction is always proportional to normal force:</li>
+    </ul>
+    <div class="math-block">
+        \(F_{\text{frict}} \propto F_{\text{normal}}\)<br>
+        \(F_{\text{frict}} = \mu F_{\text{normal}}\)
+    </div>
+    <ul class="bullet-list">
+        <li>\(\mu\) → coefficient of friction (no unit)</li>
+        <li>Depends only on the nature of surfaces, <span class="red-highlight">not on the contact area</span></li>
+    </ul>
+	
+		
+	 <div class="image-figure">
+        <img src="friction.png" alt=" " onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+    </div>
+
+    <h2>Types of Friction</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Static Friction (\(f_s\)):</span>
+            <ul class="compact-list">
+                <li>Acts when object is at rest</li>
+                <li>Prevents motion until a threshold force is applied</li>
+                <li>Formula: \(f_s = f_{s,\text{max}} = \mu_s N\)</li>
+                <li>Example: pushing a heavy box that resists moving at first</li>
+            </ul>
+        </li>
+        <li><span class="blue-highlight">Kinetic Friction (\(f_k\)):</span>
+            <ul class="compact-list">
+                <li>Acts when object is sliding</li>
+                <li>Formula: \(f_k = \mu_k N\)</li>
+                <li>Always \(\mu_k < \mu_s\) → easier to keep an object moving than to start moving it</li>
+                <li>Typical \(\mu\) values: 0.03 (ice on ice) to 1.0 (rubber on concrete)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Direction of Friction</h2>
+    <ul class="bullet-list">
+        <li>Friction force always acts <span class="blue-highlight">parallel to the surface</span></li>
+        <li>Opposes:
+            <ul class="compact-list">
+                <li>Motion (if object is sliding)</li>
+                <li>Tendency of motion (if object is stationary)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="math-block">
+        <strong>Example:</strong> A 25.0-kg block is initially at rest on a horizontal surface. A horizontal force of 75.0 N is required to set the block in motion. After it is in motion, a horizontal force of 60.0 N is required to keep the block moving with constant speed. Find the coefficients of static and kinetic friction.<br><br>
+        <strong>Given:</strong><br>
+        Mass \(m = 25 \, \text{kg}\)<br>
+        Static friction force \(f_s = 75 \, \text{N}\)<br>
+        Kinetic friction force \(f_k = 60 \, \text{N}\)<br><br>
+        <strong>Step 1: Find the normal force</strong><br>
+        \(N = mg = 25 \times 9.8 = 245 \, \text{N}\)<br><br>
+        <strong>Step 2: Coefficient of static friction</strong><br>
+        \(\mu_s = \dfrac{f_s}{N} = \dfrac{75}{245} = 0.31\)<br><br>
+        <strong>Step 3: Coefficient of kinetic friction</strong><br>
+        \(\mu_k = \dfrac{f_k}{N} = \dfrac{60}{245} = 0.245\)<br><br>
+        <strong>Answer:</strong> \(\mu_s = 0.31\), \(\mu_k = 0.245\)
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Application of Newton's Laws of Motion</div>
+    <div class="subhead">Equilibrium and Accelerating Systems</div>
+
+    <ul class="bullet-list">
+        <li>Apply Newton's laws to objects that are either:
+            <ul class="compact-list">
+                <li>In equilibrium (\(\vec{a} = 0\))</li>
+                <li>Accelerating along a straight line under constant external forces</li>
+            </ul>
+        </li>
+        <li>Only interested in <span class="blue-highlight">external forces</span> that act on the object</li>
+        <li>Assume objects can be modeled as particles → no rotational motion</li>
+        <li>Neglect mass of ropes, strings, or cables involved</li>
+    </ul>
+
+    <h2>Recommended Procedure</h2>
+    <ul class="bullet-list">
+        <li><strong>Step 1:</strong> Draw a sketch of the situation</li>
+        <li><strong>Step 2:</strong> Draw a <span class="blue-highlight">free-body diagram</span> for each body showing all forces acting on that body. Do not show forces the body exerts on others.</li>
+        <li><strong>Step 3:</strong> Choose x and y axes to simplify calculations</li>
+        <li><strong>Step 4:</strong> Apply Newton's second law to x and y components separately → \(F_x = ma_x\), \(F_y = ma_y\)</li>
+        <li><strong>Step 5:</strong> Solve equations for unknowns</li>
+    </ul>
+
+
+
+    <div class="math-block">
+        <strong>Example 1:</strong> A bag of cement of weight 300 N hangs from three ropes as shown in the figure. Two of the ropes make angles of \(\theta_1 = 53.0^\circ\) and \(\theta_2 = 37.0^\circ\) with the horizontal. If the system is in equilibrium, find the tensions \(T_1\), \(T_2\), and \(T_3\) in the ropes.<br><br>
+       	
+	 <div class="image-figure">
+        <img src="cement.png" alt=" " onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+    </div>
+	   <strong>Solution:</strong><br><br>
+        System is in equilibrium → \(\sum F = 0\) → \(\sum F_x = 0\) and \(\sum F_y = 0\)<br><br>
+        From free body diagram (a):<br>
+			 <div class="image-figure">
+        <img src="fbda.png" alt=" " onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+    </div>
+        \(\sum F_x = T_2 \cos 37^\circ - T_1 \cos 53^\circ = 0\)<br>
+        \(0.8 T_2 = 0.6 T_1\)  ... (1)<br><br>
+        \(\sum F_y = T_1 \sin 53^\circ + T_2 \sin 37^\circ - T_3 = 0\)<br>
+        \(0.8 T_1 + 0.6 T_2 = T_3\)  ... (2)<br><br>
+        From free body diagram (b):<br>
+		
+		 <div class="image-figure">
+        <img src="fbdb.png" alt=" " onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+    </div>
+	
+        \(\sum F_y = T_3 - W = 0\) → \(T_3 = W = 300 \, \text{N}\)  ... (3)<br><br>
+        Substitute (3) into (2):<br>
+        \(0.8 T_1 + 0.6 T_2 = 300 \, \text{N}\)  ... (4)<br><br>
+        From (1): \(0.8 T_2 = 0.6 T_1\) → \(T_2 = \dfrac{0.6 T_1}{0.8} = 0.75 T_1\)<br><br>
+        Substitute \(T_2\) into (4):<br>
+        \(0.8 T_1 + 0.6(0.75 T_1) = 300 \, \text{N}\)<br>
+        \(0.8 T_1 + 0.45 T_1 = 300 \, \text{N}\)<br>
+        \(1.25 T_1 = 300 \, \text{N}\)<br>
+        \(T_1 = 240 \, \text{N}\)<br><br>
+        \(T_2 = 0.75 \times 240 \, \text{N} = 180 \, \text{N}\)<br><br>
+        <span class="blue-highlight">Answer:</span> \(T_1 = 240 \, \text{N}\), \(T_2 = 180 \, \text{N}\), \(T_3 = 300 \, \text{N}\)
+    </div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="math-block">
+    <strong>Example 2:</strong> A block of mass \(m\) slides down an inclined plane as shown in the figure below. Find the expression for the acceleration of the block. (a) If the inclined plane is frictionless (b) If the inclined plane has coefficient of kinetic friction \(\mu_k\).<br><br>
+    
+	
+	 <div class="image-figure">
+        <img src="incl.png" alt=" " onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+    </div>
+	<strong>Solution:</strong><br><br>
+	The free body diagram for the problem is <br>
+
+	
+	 <div class="image-figure">
+        <img src="fbdf.png" alt=" " onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+    </div>
+    <strong>(a) Frictionless inclined plane:</strong><br>
+    The only forces acting on the block are the gravitational force (\(mg\)) downward and the normal force (\(N\)).<br>
+    Resolving \(mg\) into parallel and perpendicular components to the direction of motion.<br>
+    Considering parallel component along the \(x\)-axis:<br>
+    \(\sum F_x = mg\sin\theta = ma\)<br>
+    \(a = g\sin\theta\)<br><br>
+    <strong>(b) Inclined plane with kinetic friction \(\mu_k\):</strong><br>
+    Forces acting on the block are shown in the free body diagram.<br>
+    From the parallel component to the direction of motion:<br>
+    \(\sum F_x = mg\sin\theta - f_k = ma\)<br>
+    \(mg\sin\theta - \mu_k N = ma\)<br><br>
+    From the perpendicular component to the direction of motion:<br>
+    \(N - mg\cos\theta = 0\) → \(N = mg\cos\theta\)<br><br>
+    Substitute \(N\):<br>
+    \(mg\sin\theta - \mu_k mg\cos\theta = ma\)<br>
+    \(a = g(\sin\theta - \mu_k \cos\theta)\)
+</div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof renderMathInElement !== 'undefined') {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
+    });
+</script>
+</body>
+</html>
