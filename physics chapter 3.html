@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Qeleme Exams - Logic & Set Theory</title>
+    <!-- KaTeX CSS + JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false},{left: '\\(', right: '\\)', display: false},{left: '\\[', right: '\\]', display: true}], throwOnError: false});"></script>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a1f1a;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .slide {
+            position: relative;
+            max-width: 1100px;
+            width: 100%;
+            background: linear-gradient(145deg, #0e2a22 0%, #0a231c 100%);
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+            padding: 32px 38px 50px 38px;
+            margin-bottom: 40px;
+            border: 1px solid #2a5a4a;
+            color: #ffffff;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .slide:last-child {
+            margin-bottom: 0;
+        }
+
+        .slide::before {
+            content: "QELEME EXAMS";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-family: 'Segoe UI', 'Georgia', serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: rgba(91, 192, 168, 0.12);
+            pointer-events: none;
+            z-index: 10000;
+            white-space: nowrap;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            text-shadow: none;
+            width: 100%;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .slide > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide * {
+            z-index: auto !important;
+        }
+
+        .slide :not(.slide::before) {
+            z-index: auto;
+        }
+
+        .slide > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide .col, .slide .math-block, .slide .callout, .slide .image-figure, .slide .two-columns {
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide-footer {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.6rem;
+            color: rgba(155, 199, 187, 0.55);
+            font-family: monospace;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .slide-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #f5d742;
+            margin-bottom: 10px;
+            border-left: 5px solid #5bc0a8;
+            padding-left: 20px;
+        }
+
+        .subhead {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #f5d742;
+            margin-bottom: 22px;
+            padding-left: 26px;
+            border-bottom: 1px solid #2a5a4a;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #f5d742;
+            margin: 18px 0 12px 0;
+            border-left: 3px solid #5bc0a8;
+            padding-left: 14px;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f5e29e;
+            margin: 10px 0 6px 0;
+        }
+
+        p, li, .bullet-list li, .compact-list li, .callout, .math-block, .image-caption, .col p, .col li, td, th {
+            color: #ffffff;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        .math-block .katex, .math-block .katex * {
+            color: #ffffff;
+        }
+
+        .highlight {
+            background: #1a4036;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            display: inline-block;
+            color: #ffffff;
+        }
+
+        .blue-highlight {
+            color: #6bc8ff !important;
+            font-weight: 600;
+        }
+
+        .red-highlight {
+            color: #ff8a7a !important;
+            font-weight: 600;
+        }
+
+        .orange-highlight {
+            color: #ffb347 !important;
+            font-weight: 600;
+        }
+
+        strong.blue-highlight, b.blue-highlight {
+            color: #6bc8ff !important;
+        }
+        strong.red-highlight, b.red-highlight {
+            color: #ff8a7a !important;
+        }
+
+        .bullet-list {
+            list-style: none;
+            margin: 8px 0 14px 0;
+            padding-left: 0;
+        }
+        .bullet-list li {
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 22px;
+        }
+        .bullet-list li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: #5bc0a8;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .compact-list {
+            list-style: none;
+            margin: 6px 0 10px 0;
+            padding-left: 0;
+        }
+        .compact-list li {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .compact-list li::before {
+            content: "◦";
+            position: absolute;
+            left: 0;
+            color: #7acfb8;
+            font-size: 0.95rem;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin: 14px 0;
+        }
+        .col {
+            background: #0f2c23;
+            border-radius: 20px;
+            padding: 16px 18px;
+            border: 1px solid #2a5a4a;
+        }
+        .col .bullet-list li::before {
+            color: #5bc0a8;
+        }
+
+        .math-block {
+            background: #0a241d;
+            padding: 14px 18px;
+            border-radius: 18px;
+            margin: 14px 0;
+            border-left: 5px solid #5bc0a8;
+            overflow-x: auto;
+            font-size: 1rem;
+        }
+        .math-block .katex {
+            font-size: 1.05em;
+        }
+
+        .callout {
+            background: #0e2a22;
+            border-left: 5px solid #5bc0a8;
+            border-radius: 18px;
+            padding: 12px 18px;
+            margin: 14px 0;
+            font-size: 1rem;
+        }
+
+        .image-figure {
+            margin: 16px 0;
+            text-align: center;
+        }
+        .image-figure img {
+            max-width: 75%;
+            height: auto;
+            max-height: 210px;
+            border-radius: 12px;
+            border: 1px solid #3a7a64;
+            background: #0a241d;
+            object-fit: contain;
+        }
+        .image-caption {
+            font-size: 0.75rem;
+            color: #9bc7bb;
+            margin-top: 5px;
+        }
+        .image-placeholder-note {
+            background: #0a241d;
+            border-radius: 12px;
+            padding: 10px 16px;
+            text-align: center;
+            margin: 12px 0;
+            border: 1px dashed #5bc0a8;
+            color: #9bc7bb;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #0f2c23;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            margin: 16px 0;
+        }
+        th, td {
+            border: 1px solid #2a5a4a;
+            padding: 8px 10px;
+            text-align: center;
+            color: #ffffff;
+        }
+        th {
+            background: #1a4036;
+            color: #f5d742;
+        }
+
+        .inline-arrow {
+            font-weight: 500;
+            color: #8bcbae;
+            margin: 0 2px;
+        }
+
+        @media (max-width: 750px) {
+            .slide { padding: 24px 22px 50px 22px; }
+            .two-columns { grid-template-columns: 1fr; gap: 16px; }
+            .slide-title { font-size: 1.9rem; }
+            .image-figure img { max-width: 85%; max-height: 180px; }
+            .slide::before { font-size: 2rem; letter-spacing: 4px; opacity: 0.6; }
+            .slide-footer { font-size: 0.55rem; bottom: 8px; }
+            p, li, .bullet-list li { font-size: 1rem; }
+        }
+
+        /* PRINT STYLES - each slide stays on ONE page (no cutting) */
+       /* PRINT STYLES - each slide stays on ONE page (no cutting) */
+@media print {
+    @page {
+        margin: 0;
+        size: auto;
+    }
+    
+    html, body {
+        background: #0a231c;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        background: #0a231c;
+        padding: 0;
+    }
+    
+    .slide {
+        position: relative;
+        background: linear-gradient(145deg, #0e2a22 0%, #0a231c 100%);
+        border: none;  /* ← REMOVED BORDER FOR PRINT */
+        box-shadow: none;
+        margin: 0;
+        margin-bottom: 0;
+        padding: 0.35in 0.4in 0.55in 0.4in;
+        border-radius: 0;
+        page-break-after: always;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        overflow: visible;
+        isolation: isolate;
+    }
+    
+    .slide:last-child {
+        page-break-after: auto;
+    }
+    
+   .slide::before {
+        content: "QELEME EXAMS";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-25deg);
+        font-size: 3rem;
+        font-weight: 800;
+        color: rgba(91, 192, 168, 0.08);  /* ← Changed from 0.25 to 0.08 (much lighter) */
+        white-space: nowrap;
+        letter-spacing: 6px;
+        z-index: 10000;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .slide-footer {
+        position: absolute;
+        bottom: 12px;
+        left: 0;
+        right: 0;
+        font-size: 0.55rem;
+        color: rgba(155, 199, 187, 0.6);
+        text-align: center;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        z-index: 1;
+    }
+    
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .image-figure img {
+        max-height: 180px;
+        max-width: 65%;
+    }
+    
+    .slide > * {
+        z-index: 1;
+        position: relative;
+    }
+
+    /* Prevent headings from being left alone at the bottom of a page */
+    h1, h2, h3, h4, .slide-title, .subhead {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+        break-after: avoid;
+    }
+
+    /* Keep headings with at least 3 lines of following content */
+    h2, h3, .slide-title {
+        orphans: 3;
+        widows: 3;
+    }
+
+    /* Prevent callouts, tables, and columns from breaking */
+    .callout, .math-block, table, .two-columns, .col {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* Ensure list items stay together when possible */
+    li {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* For long lists, allow breaks but keep minimum 3 items together */
+    ul, .bullet-list, .compact-list {
+        orphans: 3;
+        widows: 3;
+    }
+}
+
+        .katex { color: #ffffff; }
+        .katex .mord, .katex .mbin, .katex .mrel { color: #f0f9f5; }
+    </style>
+</head>
+<body>
+
+
+
+  <!-- Cover Page -->
+
+<div class="slide" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(135deg, #0a2a1f 0%, #071a12 100%); padding: 60px 40px;">
+    <div class="slide-footer" style="position: absolute; bottom: 20px; left: 0; right: 0;">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <!-- Logo Image -->
+    <div style="width: 120px; height: 120px; margin-bottom: 30px;">
+        <img src="Qeleme_Exams.png" alt="Qeleme Exams Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%; box-shadow: 0 20px 35px -8px rgba(0,0,0,0.4), 0 0 0 4px rgba(91,192,168,0.2);">
+    </div>
+    
+    <!-- App Name -->
+    <div style="margin-bottom: 20px;">
+        <span style="font-size: 1.2rem; font-weight: 500; color: #5bc0a8; letter-spacing: 4px; text-transform: uppercase;">Qeleme Exams</span>
+    </div>
+    
+    <!-- Main Title -->
+    <h1 style="font-size: 3.2rem; font-weight: 800; color: #f5d742; margin: 15px 0 10px 0; text-shadow: 0 2px 10px rgba(0,0,0,0.3); letter-spacing: -0.5px;">
+        General Physics
+    </h1>
+    
+    <div style="width: 80px; height: 3px; background: #5bc0a8; margin: 20px auto;"></div>
+    
+    <h2 style="font-size: 2rem; font-weight: 600; color: #ffffff; margin: 10px 0 25px 0; border-left: none; padding-left: 0;">
+        Chapter 3
+    </h2>
+    
+    <div style="background: rgba(91,192,168,0.15); padding: 12px 28px; border-radius: 50px; margin-bottom: 40px; border: 1px solid rgba(91,192,168,0.3);">
+        <span style="font-size: 1rem; color: #9bc7bb; letter-spacing: 1px;">FLUID MECHNICS</span>
+    </div>
+    
+	   <div style="margin-bottom: 25px;">
+        <span style="font-size: 0.85rem; color: #9bc7bb;">Instructor: <strong style="color: #f5d742;">Mr. Dagim</strong></span>
+    </div>
+    <!-- Prepared by line -->
+    <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(91,192,168,0.3); width: 80%;">
+        <p style="font-size: 0.85rem; color: #9bc7bb; margin: 5px 0;">
+            <strong style="color: #f5d742;">Prepared by Qeleme Exams - Learn. Practice. Win</strong>
+        </p>
+        <p style="font-size: 0.75rem; color: #6a9e8e; margin-top: 10px;">
+             Interactive Learning Resource 
+        </p>
+    </div>
+    
+    <!-- Decorative dots -->
+    <div style="position: absolute; bottom: 80px; left: 20px; opacity: 0.3;">
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+    </div>
+    <div style="position: absolute; top: 80px; right: 20px; opacity: 0.3;">
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+        <div style="width: 6px; height: 6px; background: #5bc0a8; border-radius: 50%; margin: 4px 0;"></div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Contents</div>
+    
+    <div class="two-columns">
+        <div class="col">
+            <h3 style="color: #f5d742;">Fluid Mechanics</h3>
+            <ul class="compact-list">
+                <li>Introduction to Fluid Mechanics</li>
+                <li>Properties of Bulk Matter</li>
+                <li>Stress and Strain</li>
+                <li>Tensile, Shear, and Volume Strain</li>
+            </ul>
+            
+            <h3 style="color: #f5d742; margin-top: 15px;">Elasticity</h3>
+            <ul class="compact-list">
+                <li>Elasticity Moduli</li>
+                <li>Young's Modulus (Y)</li>
+                <li>Shear Modulus (S)</li>
+                <li>Bulk Modulus (B)</li>
+            </ul>
+        </div>
+        
+        <div class="col">
+            <h3 style="color: #f5d742;">Fluid Statics</h3>
+            <ul class="compact-list">
+                <li>Density and Specific Gravity</li>
+                <li>Pressure in Static Fluids</li>
+                <li>Atmospheric, Gauge, and Absolute Pressure</li>
+                <li>Pascal's Principle and Hydraulic Press</li>
+                <li>Archimedes' Principle and Buoyant Force</li>
+            </ul>
+            
+            <h3 style="color: #f5d742; margin-top: 15px;">Fluid Dynamics</h3>
+            <ul class="compact-list">
+                <li>Steady and Turbulent Flow</li>
+                <li>Equation of Continuity</li>
+                <li>Bernoulli's Equation</li>
+                <li>Applications of Bernoulli's Principle</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Introduction</div>
+    <ul class="bullet-list">
+        <li>Fluid mechanics → branch of <span class="blue-highlight">physics</span> concerned with the mechanics of <span class="red-highlight">fluids</span>:
+            <ul class="compact-list">
+                <li>At rest → <span class="blue-highlight">Fluid Statics</span></li>
+                <li>In motion → <span class="blue-highlight">Fluid Dynamics</span></li>
+            </ul>
+        </li>
+        <li>Also studies the <span class="red-highlight">forces acting on fluids</span></li>
+    </ul>
+
+    <h2>Applications in Daily Life and Engineering</h2>
+    <ul class="bullet-list">
+        <li>Breathing and <span class="blue-highlight">blood flow</span></li>
+        <li><span class="blue-highlight">Swimming</span></li>
+        <li><span class="red-highlight">Pumps, fans, turbines, engines</span></li>
+        <li><span class="blue-highlight">Airplanes</span>, <span class="blue-highlight">ships</span>, <span class="blue-highlight">missiles</span></li>
+        <li>Rivers, icebergs</li>
+        <li>Windmills, sprinklers, jets, filters, pipes</li>
+    </ul>
+
+    <h2>Definition of a Fluid</h2>
+    <ul class="bullet-list">
+        <li>A <span class="blue-highlight">fluid</span> is a substance that <span class="red-highlight">continually deforms (flows)</span> under an applied <span class="orange-highlight">shear stress</span> (external force)</li>
+        <li><span class="red-highlight">Both liquids and gases are fluids</span></li>
+    </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Properties of Bulk Matter</div>
+    <div class="subhead">Elastic Behavior of Solids</div>
+
+    <ul class="bullet-list">
+        <li>Although a solid has a <span class="blue-highlight">definite shape and volume</span>, external forces can change both</li>
+        <li>Sufficiently large force → <span class="red-highlight">permanently deform or break</span> an object</li>
+        <li>When external forces are removed → object tends to return to its original shape and size → <span class="orange-highlight">elastic behavior</span></li>
+    </ul>
+
+    <h2>Key Definitions</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Elastic materials</span> → regain original shape and size when deforming force is removed</li>
+        <li><span class="blue-highlight">Elastic deformation</span> → <span class="red-highlight">reversible</span> deformation by force applied within elastic limit</li>
+        <li>Beyond elastic limit → force causes permanent and irreversible deformation → <span class="orange-highlight">plastic deformation</span></li>
+        <li><span class="red-highlight">Plastic materials</span> → do not regain original shape and size when deforming force is removed</li>
+    </ul>
+
+    <h2>Stress and Strain</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Stress</span> → force per unit area causing deformation</li>
+        <li>SI unit → <span class="red-highlight">Pascal (Pa)</span> = N/m² (same as pressure unit)</li>
+        <li><span class="blue-highlight">Strain</span> → measures amount of deformation → change in configuration divided by initial configuration</li>
+        <li>Strain is <span class="orange-highlight">dimensionless</span> (no unit)</li>
+    </ul>
+
+    <div class="math-block">
+        <strong>Stress:</strong> \( \sigma = \frac{F}{A} \)<br><br>
+        <strong>Strain:</strong> \( \varepsilon = \frac{\text{Change in configuration}}{\text{Initial configuration}} \)
+    </div>
+
+    <h2>Three Kinds of Strain</h2>
+
+    <h3>1. Tensile Strain</h3>
+    <ul class="bullet-list">
+        <li>When ends of a bar (rod or wire) with uniform cross-sectional area A are pulled with <span class="blue-highlight">equal and opposite forces</span> \(F_{\perp}\)</li>
+        <li>Bar undergoes a <span class="red-highlight">stretch</span> under tensile stress</li>
+    </ul>
+
+    <div class="math-block">
+        <strong>Tensile stress:</strong> \( \sigma_t = \frac{F_{\perp}}{A} \)<br><br>
+        <strong>Tensile strain:</strong> \( \varepsilon_t = \frac{\Delta l}{l_0} \)
+    </div>
+
+    <div class="image-figure">
+        <img src="figure3_1.png" alt="Bar showing tensile stress and tensile strain" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Figure: Bar's a) tensile stress and b) tensile strain</div>
+        <div class="image-placeholder-note" style="display:none;">[figure3_1.png]</div>
+    </div>
+
+    <h3>2. Shear Stress and Strain</h3>
+    <ul class="bullet-list">
+        <li>Occurs when object is subjected to a force <span class="blue-highlight">parallel to one of its faces</span> while opposite face is held fixed</li>
+        <li>Originally rectangular block becomes <span class="red-highlight">parallelogram shape</span></li>
+        <li>Example → book pushed sideways</li>
+        <li>For small distortions → <span class="orange-highlight">no change in volume</span></li>
+    </ul>
+
+    <div class="math-block">
+        <strong>Shear stress:</strong> \( \sigma_{\text{shear}} = \frac{F}{A} \)<br><br>
+        <strong>Shear strain:</strong> \( \varepsilon_{\text{shear}} = \frac{x}{h} = \tan \phi \)
+    </div>
+
+    <div class="image-figure">
+        <img src="figure3_2.png" alt="Shear stress and strain diagram" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Figure: Shear deformation</div>
+        <div class="image-placeholder-note" style="display:none;">[figure3_2.png]</div>
+    </div>
+
+    <h3>3. Volume Stress and Strain</h3>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Volume stress</span> → stress that causes volume deformation → ratio of change in applied force ΔF to surface area A</li>
+        <li><span class="blue-highlight">Volume strain</span> → fractional change in volume → change in volume ΔV divided by original volume V₀</li>
+    </ul>
+
+    <div class="math-block">
+        <strong>Volume stress:</strong> \( \sigma_{\text{volume}} = \frac{\Delta F}{A} \)<br><br>
+        <strong>Volume strain:</strong> \( \varepsilon_{\text{volume}} = \frac{\Delta V}{V_0} \)
+    </div>
+
+    <div class="image-figure">
+        <img src="figure3_3.png" alt="Block undergoing volume strain" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Figure: Block undergoing volume strain by applied volume stress</div>
+        <div class="image-placeholder-note" style="display:none;">[figure3_3.png]</div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Elasticity Moduli</div>
+    <div class="subhead">Stress-Strain Relationship</div>
+
+    <ul class="bullet-list">
+        <li>Stress is <span class="blue-highlight">proportional to strain</span> when stress is sufficiently small</li>
+        <li><span class="red-highlight">Elastic modulus</span> → proportionality constant depending on:
+            <ul class="compact-list">
+                <li>Material being deformed</li>
+                <li>Nature of the deformation</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="math-block">
+        <strong>General relationship:</strong><br>
+        \( \text{Stress} = \text{Elastic modulus} \times \text{Strain} \)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Analogy → Hooke's law (F = -kΔx) → elastic modulus is analogous to <span class="orange-highlight">spring constant</span></li>
+        <li>Corresponding to three types of strains → <span class="blue-highlight">three types of elastic moduli</span></li>
+    </ul>
+
+    <h2>1. Young's Modulus (Y)</h2>
+    <ul class="bullet-list">
+        <li>Ratio of <span class="blue-highlight">tensile stress to tensile strain</span></li>
+        <li>Measures resistance of a solid to <span class="red-highlight">change in its length</span></li>
+        <li>Used to characterize rod or wire under tension or compression</li>
+        <li>Units → <span class="orange-highlight">force per unit area (Pa)</span> because strain is dimensionless</li>
+    </ul>
+
+    <div class="math-block">
+        \( Y = \frac{\text{Tensile stress}}{\text{Tensile strain}} = \frac{F_{\perp}/A}{\Delta l / l_0} \)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Experiments show:
+            <ul class="compact-list">
+                <li>For fixed applied force → Δl ∝ l₀</li>
+                <li>Force to produce given strain ∝ cross-sectional area A</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>2. Shear Modulus (S)</h2>
+    <ul class="bullet-list">
+        <li>Ratio of <span class="blue-highlight">shear stress to shear strain</span></li>
+        <li>Measures resistance to <span class="red-highlight">motion of planes within a solid</span> parallel to each other</li>
+        <li>Material with large shear modulus → <span class="orange-highlight">difficult to bend</span></li>
+        <li>Units → <span class="blue-highlight">Pascal (Pa)</span></li>
+    </ul>
+
+    <div class="math-block">
+        \( S = \frac{\text{Shear stress}}{\text{Shear strain}} = \frac{F/A}{x/h} \)
+    </div>
+
+    <h2>3. Bulk Modulus (B)</h2>
+    <ul class="bullet-list">
+        <li>Ratio of <span class="blue-highlight">volume stress to volume strain</span></li>
+        <li>Measures resistance of solids or liquids to <span class="red-highlight">changes in volume</span></li>
+        <li>Material with large bulk modulus → <span class="orange-highlight">doesn't compress easily</span></li>
+        <li>Units → <span class="blue-highlight">Pascal (Pa)</span></li>
+    </ul>
+
+    <div class="math-block">
+        \( B = \frac{\text{Volume stress}}{\text{Volume strain}} = \frac{\Delta F/A}{\Delta V / V_0} = \frac{\Delta P}{\Delta V / V_0} \)
+    </div>
+
+    <ul class="bullet-list">
+        <li><span class="red-highlight">Negative sign</span> makes B a positive number → increase in pressure (positive ΔP) causes decrease in volume (negative ΔV)</li>
+        <li>Reciprocal of bulk modulus → called <span class="blue-highlight">compressibility</span></li>
+        <li><span class="orange-highlight">Liquids:</span> have bulk modulus but <span class="red-highlight">no shear modulus or Young's modulus</span> → liquids simply flow when shear or tensile force is applied</li>
+    </ul>
+
+    <h2>Strain Energy</h2>
+    <ul class="bullet-list">
+        <li>Energy stored in a stretched wire</li>
+        <li>x → stretch due to applied force F</li>
+    </ul>
+
+    <div class="math-block">
+        \( \text{Strain energy} = \frac{1}{2} k x^2 \)
+    </div>
+
+    <h2>Table: Typical Values for Elastic Moduli</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Substance</th>
+                <th>Young's Modulus (N/m²)</th>
+                <th>Shear Modulus (N/m²)</th>
+                <th>Bulk Modulus (N/m²)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Tungsten</td><td>35 × 10¹⁰</td><td>14 × 10¹⁰</td><td>20 × 10¹⁰</td></tr>
+            <tr><td>Steel</td><td>20 × 10¹⁰</td><td>8.4 × 10¹⁰</td><td>6 × 10¹⁰</td></tr>
+            <tr><td>Copper</td><td>11 × 10¹⁰</td><td>4.2 × 10¹⁰</td><td>14 × 10¹⁰</td></tr>
+            <tr><td>Brass</td><td>9.1 × 10¹⁰</td><td>3.5 × 10¹⁰</td><td>6.1 × 10¹⁰</td></tr>
+            <tr><td>Aluminum</td><td>7.0 × 10¹⁰</td><td>2.5 × 10¹⁰</td><td>7.0 × 10¹⁰</td></tr>
+            <tr><td>Glass</td><td>6.5 - 7.8 × 10¹⁰</td><td>2.6 - 3.2 × 10¹⁰</td><td>5.0 - 5.5 × 10¹⁰</td></tr>
+            <tr><td>Quartz</td><td>5.6 × 10¹⁰</td><td>2.6 × 10¹⁰</td><td>2.7 × 10¹⁰</td></tr>
+            <tr><td>Water</td><td>—</td><td>—</td><td>0.21 × 10¹⁰</td></tr>
+            <tr><td>Mercury</td><td>—</td><td>—</td><td>2.8 × 10¹⁰</td></tr>
+        </tbody>
+    </table>
+
+   <div class="callout">
+    <span class="blue-highlight">Example:</span> Suppose that the tension in the cable is 940 N as the actor reaches the lowest point. What diameter should a 10-m-long steel wire have if we do not want it to stretch more than 0.5 cm under these conditions?
+<br><br>
+    <strong>Solution:</strong><br><br>
+    From the definition of Young's modulus, solve for the required cross-sectional area. Assuming the cross section is circular, we can determine the diameter of the wire.<br><br>
+
+    <strong>Step 1: Young's modulus equation</strong><br>
+    \( Y = \frac{F_{\perp}/A}{\Delta l / l_0} \) → \( A = \frac{F l_0}{Y \Delta l} \)<br><br>
+
+    <strong>Step 2: Substitute values</strong><br>
+    \( A = \frac{(940 \, \text{N})(10 \, \text{m})}{(20 \times 10^{10} \, \text{N/m}^2)(0.005 \, \text{m})} \)<br>
+    \( A = \frac{9400}{20 \times 10^{10} \times 0.005} = \frac{9400}{1 \times 10^9} = 9.4 \times 10^{-6} \, \text{m}^2 \)<br><br>
+
+    <strong>Step 3: Find radius</strong><br>
+    Since \( A = \pi r^2 \):<br>
+    \( r = \sqrt{\frac{A}{\pi}} = \sqrt{\frac{9.4 \times 10^{-6} \, \text{m}^2}{\pi}} \)<br>
+    \( r = \sqrt{2.99 \times 10^{-6}} = 1.7 \times 10^{-3} \, \text{m} = 1.7 \, \text{mm} \)<br><br>
+
+    <strong>Step 4: Find diameter</strong><br>
+    \( d = 2r = 2(1.7 \, \text{mm}) = 3.4 \, \text{mm} \)<br><br>
+
+    <span class="blue-highlight">Answer:</span> The steel wire should have a diameter of <span class="red-highlight">3.4 mm</span>.
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Density and Pressure in Static Fluids</div>
+    <div class="subhead">Fundamental Concepts</div>
+
+    <h2>Density (ρ)</h2>
+    <ul class="bullet-list">
+        <li>Quantity of <span class="blue-highlight">mass (m) per unit volume (V)</span> of a body</li>
+        <li>SI unit → <span class="red-highlight">kg/m³</span></li>
+    </ul>
+
+    <div class="math-block">
+        \( \rho = \frac{m}{V} \)
+    </div>
+
+    <h2>Specific Gravity (SG)</h2>
+    <ul class="bullet-list">
+        <li>Ratio of density of a substance to density of <span class="blue-highlight">standard substance</span></li>
+        <li>Standard → density of pure water at 4°C = <span class="red-highlight">1.0 × 10³ kg/m³</span></li>
+        <li>SG is <span class="orange-highlight">dimensionless</span> → same in any measurement system</li>
+    </ul>
+
+    <div class="math-block">
+        \( \text{SG} = \frac{\rho_{\text{substance}}}{\rho_{\text{water}}} \)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">Example:</span> Density of aluminum = 2.7 × 10³ kg/m³ → SG = (2.7 × 10³)/(1.0 × 10³) = <span class="red-highlight">2.7</span>
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">Example:</span> A solid sphere made of wood has a radius of 0.1 m. The mass of the sphere is 1.0 kg. Determine a) density and b) specific gravity of the wood.<br><br>
+        <strong>Solution:</strong><br><br>
+        <strong>Step 1: Calculate the volume of the sphere</strong><br>
+        The volume of a sphere is given by \( V = \frac{4}{3} \pi r^3 \)<br>
+        \( V = \frac{4}{3} \times 3.14 \times (0.1 \, \text{m})^3 \)<br>
+        \( V = \frac{4}{3} \times 3.14 \times 0.001 \, \text{m}^3 \)<br>
+        \( V = 4.18 \times 10^{-3} \, \text{m}^3 \)<br><br>
+        <strong>Step 2: Calculate the density of the wood</strong><br>
+        \( \rho = \frac{m}{V} = \frac{1.0 \, \text{kg}}{4.18 \times 10^{-3} \, \text{m}^3} \)<br>
+        \( \rho = 239 \, \text{kg/m}^3 \)<br><br>
+        <strong>Step 3: Calculate the specific gravity of the wood</strong><br>
+        \( \text{SG} = \frac{\rho_{\text{wood}}}{\rho_{\text{water}}} = \frac{239 \, \text{kg/m}^3}{1000 \, \text{kg/m}^3} \)<br>
+        \( \text{SG} = 0.239 \)
+    </div>
+
+    <h2>Pressure (P)</h2>
+    <ul class="bullet-list">
+        <li>Ratio of the <span class="blue-highlight">force acting perpendicular to a surface</span> to the surface area A on which the force acts</li>
+        <li>SI unit → <span class="red-highlight">N/m² = Pascal (Pa)</span></li>
+        <li>Another commonly used unit → <span class="orange-highlight">atmosphere (atm)</span> = 101.3 kPa (average pressure exerted by Earth's atmosphere at sea level)</li>
+    </ul>
+
+    <div class="math-block">
+        \( P = \frac{F_{\perp}}{A} \)
+    </div>
+
+    <ul class="bullet-list">
+        <li>The pressure produced by a column of fluid of height h and density ρ is given by:</li>
+    </ul>
+
+    <div class="math-block">
+        \( P_{\text{fluid}} = \rho g h \)
+    </div>
+
+    <ul class="bullet-list">
+        <li>The density of liquids and solids is considered to be <span class="blue-highlight">constant</span></li>
+        <li>In reality, density of a liquid increases slightly with increasing depth, but the variation is usually <span class="orange-highlight">negligible</span></li>
+    </ul>
+
+    <h2>Important Notes About Fluid Pressure</h2>
+    <ul class="bullet-list">
+        <li>All points at the <span class="blue-highlight">same level</span> in a fluid have the same pressure</li>
+        <li>Fluid pressure <span class="red-highlight">increases with increase in depth</span> of the fluid</li>
+        <li>Fluid pressure <span class="orange-highlight">does not depend</span> on the shape of the container</li>
+    </ul>
+
+    <h2>Atmospheric Pressure</h2>
+    <ul class="bullet-list">
+        <li>Pressure due to the <span class="blue-highlight">weight of the atmosphere</span> exerted on the surface of the Earth</li>
+        <li>Atmospheric pressure <span class="red-highlight">decreases with increase in altitude</span> as a result of decrease in the density of air</li>
+    </ul>
+
+    <h2>Gauge Pressure</h2>
+    <ul class="bullet-list">
+        <li>The <span class="blue-highlight">difference in pressure</span> between a system and the surrounding atmosphere</li>
+        <li>Gauge pressure is the pressure <span class="orange-highlight">relative to atmospheric pressure</span></li>
+        <li><span class="blue-highlight">Positive</span> for pressures above atmospheric pressure</li>
+        <li><span class="red-highlight">Negative</span> for pressures below atmospheric pressure</li>
+    </ul>
+
+    <div class="math-block">
+        \( P_{\text{gauge}} = P_{\text{system}} - P_{\text{atmosphere}} \)
+    </div>
+
+    <h2>Absolute Pressure</h2>
+    <ul class="bullet-list">
+        <li>Atmospheric pressure adds to the pressure in any fluid not enclosed in a rigid container (Pascal's principle)</li>
+        <li>Total pressure or <span class="blue-highlight">absolute pressure</span> = gauge pressure + atmospheric pressure</li>
+        <li>Absolute pressure in fluids <span class="red-highlight">cannot be negative</span> → fluids push rather than pull</li>
+        <li>The smallest possible absolute pressure is <span class="orange-highlight">zero</span></li>
+        <li>The smallest possible gauge pressure is \( P_{\text{gauge}} = -P_{\text{atmosphere}} \)</li>
+    </ul>
+
+    <div class="math-block">
+        \( P_{\text{absolute}} = P_{\text{gauge}} + P_{\text{atmosphere}} \)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">Example:</span> A submerged wreck is located 18.3 m beneath the surface of the ocean off the coast of South Florida. Determine the a) gauge pressure and b) absolute pressure on a scuba diver who is exploring the wreck. Note: the density of sea water is 1025 kg/m³.<br><br>
+        <strong>Solution:</strong><br><br>
+        <strong>Step 1: Identify the given values</strong><br>
+        Depth h = 18.3 m<br>
+        Density of sea water ρ = 1025 kg/m³<br>
+        Acceleration due to gravity g = 9.80 m/s²<br>
+        Atmospheric pressure P_atm = 1.013 × 10⁵ Pa<br><br>
+        <strong>Step 2: Calculate the gauge pressure</strong><br>
+        The gauge pressure is given by \( P_{\text{gauge}} = \rho g h \)<br>
+        \( P_{\text{gauge}} = (1025 \, \text{kg/m}^3)(9.80 \, \text{m/s}^2)(18.3 \, \text{m}) \)<br>
+        \( P_{\text{gauge}} = 1025 \times 9.80 \times 18.3 \)<br>
+        \( P_{\text{gauge}} = 183,000 \, \text{Pa} \) (approximately)<br>
+        \( P_{\text{gauge}} = 1.83 \times 10^5 \, \text{Pa} = 183 \, \text{kPa} \)<br><br>
+        <strong>Step 3: Calculate the absolute pressure</strong><br>
+        The absolute pressure is given by \( P_{\text{abs}} = P_{\text{gauge}} + P_{\text{atm}} \)<br>
+        \( P_{\text{abs}} = (1.83 \times 10^5 \, \text{Pa}) + (1.013 \times 10^5 \, \text{Pa}) \)<br>
+        \( P_{\text{abs}} = 2.84 \times 10^5 \, \text{Pa} = 284 \, \text{kPa} \)<br><br>
+        <strong>Final Answer:</strong><br>
+        a) Gauge pressure = <span class="red-highlight">1.83 × 10⁵ Pa (183 kPa)</span><br>
+        b) Absolute pressure = <span class="red-highlight">2.84 × 10⁵ Pa (284 kPa)</span>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Buoyant Force and Archimedes' Principles</div>
+    <div class="subhead">Pascal's Principle and Hydraulic Press</div>
+
+    <h2>Pascal's Principle</h2>
+    <ul class="bullet-list">
+        <li>Pressure applied to a <span class="blue-highlight">confined fluid</span> in a container is transmitted <span class="red-highlight">equally to all regions</span> of the fluid and to the walls of the container</li>
+        <li>Important application → <span class="orange-highlight">hydraulic press</span> (Figure)</li>
+    </ul>
+
+    <div class="image-figure">
+        <img src="hydraulic_press.png" alt="Hydraulic press diagram showing small piston and large piston" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Figure: A hydraulic press → small force F₁ on the left produces a much larger force F₂ on the right</div>
+        <div class="image-placeholder-note" style="display:none;">[hydraulic_press.png]</div>
+    </div>
+
+    <ul class="bullet-list">
+        <li>A downward force F₁ applied to a <span class="blue-highlight">small piston</span> of area A₁ causes pressure \( P_1 = F_1/A_1 \)</li>
+        <li>The pressure is transmitted throughout the fluid and reaches the <span class="red-highlight">larger piston</span> of area A₂ without any change</li>
+        <li>As the fluid moves, it pushes the larger piston with F₂ and exerts pressure \( P_2 = F_2/A_2 \)</li>
+        <li>According to Pascal's principle → these two pressures are <span class="orange-highlight">equal</span></li>
+    </ul>
+
+    <div class="math-block">
+        \( \frac{F_1}{A_1} = \frac{F_2}{A_2} \)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">Example:</span> The small piston of a hydraulic lift has an area of 0.20 m². A car weighing 1.2 × 10⁴ N sits on a rack mounted on the large piston. The large piston has an area of 0.90 m². How large force must be applied to the small piston to support the car?<br><br>
+
+        <strong>Given:</strong><br>
+        Area of small piston: \( A_1 = 0.20 \, \text{m}^2 \)<br>
+        Area of large piston: \( A_2 = 0.90 \, \text{m}^2 \)<br>
+        Weight of car (force on large piston): \( F_2 = 1.2 \times 10^4 \, \text{N} \)<br>
+        Force on small piston: \( F_1 = \, ? \)<br><br>
+
+        <strong>Solution:</strong><br><br>
+
+        <strong>Step 1: Apply Pascal's principle</strong><br>
+        According to Pascal's principle, the pressure applied to the confined fluid is transmitted equally throughout the fluid. Therefore:<br>
+        \( P_1 = P_2 \)<br>
+        \( \frac{F_1}{A_1} = \frac{F_2}{A_2} \)<br><br>
+
+        <strong>Step 2: Solve for the unknown force F₁</strong><br>
+        \( F_1 = F_2 \times \frac{A_1}{A_2} \)<br><br>
+
+        <strong>Step 3: Substitute the given values</strong><br>
+        \( F_1 = (1.2 \times 10^4 \, \text{N}) \times \frac{0.20 \, \text{m}^2}{0.90 \, \text{m}^2} \)<br>
+        \( F_1 = (1.2 \times 10^4 \, \text{N}) \times 0.222 \)<br>
+        \( F_1 = 2.67 \times 10^3 \, \text{N} \)<br><br>
+
+        <strong>Step 4: Round to appropriate significant figures</strong><br>
+        \( F_1 = 2.7 \times 10^3 \, \text{N} \)<br><br>
+
+        <strong>Final Answer:</strong><br>
+        The force that must be applied to the small piston to support the car is <span class="red-highlight">2.7 × 10³ N</span>.
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Archimedes' Principle</div>
+    <div class="subhead">Buoyant Force and Fluid Displacement</div>
+
+    <h2>Archimedes' Principle</h2>
+    <ul class="bullet-list">
+        <li>Any object that is <span class="blue-highlight">partially or totally submerged</span> in a liquid has a <span class="red-highlight">buoyant force</span> acting on it which pushes the object upward</li>
+        <li>A rock appears to weigh <span class="orange-highlight">less</span> when submerged in liquid</li>
+        <li>It is very difficult to push a beach ball under water → buoyant force pushes it up</li>
+        <li>Developed by the Greek mathematician <span class="blue-highlight">Archimedes</span> around 250 B.C.</li>
+    </ul>
+
+    <div class="callout">
+        <span class="blue-highlight">Archimedes' Principle Statement:</span><br>
+        Any body completely or partially submerged in a fluid is buoyed up by a force <span class="red-highlight">equal to the weight of the fluid displaced</span> by the body.
+    </div>
+
+    <div class="math-block">
+        \( F_{\text{buoyant}} = W_{\text{fluid}} = \rho_{\text{fluid}} \times V_{\text{displaced}} \times g \)
+    </div>
+
+    <ul class="bullet-list">
+        <li>\( F_{\text{buoyant}} \) → magnitude of the buoyant force</li>
+        <li>\( W_{\text{fluid}} \) → weight of the displaced fluid</li>
+        <li>The pressure of the fluid depends on the <span class="orange-highlight">depth</span> of the fluid</li>
+        <li>Pressure at the <span class="blue-highlight">top</span> of an object is <span class="red-highlight">less than</span> pressure at the <span class="blue-highlight">bottom</span> → creates a net upward force</li>
+    </ul>
+
+    <div class="callout">
+        <span class="blue-highlight">Example:</span> A sample of an unknown material weighs 300 N in air and 200 N when submerged in an alcohol solution with a density of 0.70 × 10³ kg/m³. What is the density of the material?<br><br>
+
+        <strong>Given:</strong><br>
+        Weight in air: \( W_{\text{air}} = 300 \, \text{N} \)<br>
+        Weight in alcohol: \( W_{\text{alcohol}} = 200 \, \text{N} \)<br>
+        Density of alcohol: \( \rho_{\text{alcohol}} = 0.70 \times 10^3 \, \text{kg/m}^3 \)<br>
+        Density of material: \( \rho_{\text{material}} = \, ? \)<br><br>
+
+        <strong>Solution:</strong><br><br>
+
+        <strong>Step 1: Calculate the buoyant force</strong><br>
+        When an object is submerged in a fluid, the buoyant force equals the <span class="blue-highlight">loss of weight</span> of the object in the fluid.<br>
+        \( F_{\text{buoy}} = W_{\text{air}} - W_{\text{alcohol}} \)<br>
+        \( F_{\text{buoy}} = 300 \, \text{N} - 200 \, \text{N} \)<br>
+        \( F_{\text{buoy}} = 100 \, \text{N} \)<br><br>
+
+        <strong>Step 2: Relate buoyant force to displaced fluid</strong><br>
+        According to Archimedes' principle:<br>
+        \( F_{\text{buoy}} = \rho_{\text{alcohol}} \times V_{\text{displaced}} \times g \)<br>
+        The volume of displaced fluid equals the <span class="orange-highlight">volume of the object</span> (since it is fully submerged).<br>
+        \( V = \frac{F_{\text{buoy}}}{\rho_{\text{alcohol}} \times g} \)<br><br>
+
+        <strong>Step 3: Relate weight in air to density of material</strong><br>
+        The weight of the object in air is:<br>
+        \( W_{\text{air}} = \rho_{\text{material}} \times V \times g \)<br>
+        Substituting V from step 2:<br>
+        \( W_{\text{air}} = \rho_{\text{material}} \times \frac{F_{\text{buoy}}}{\rho_{\text{alcohol}} \times g} \times g \)<br>
+        \( W_{\text{air}} = \rho_{\text{material}} \times \frac{F_{\text{buoy}}}{\rho_{\text{alcohol}}} \)<br><br>
+
+        <strong>Step 4: Solve for density of material</strong><br>
+        \( \rho_{\text{material}} = \rho_{\text{alcohol}} \times \frac{W_{\text{air}}}{F_{\text{buoy}}} \)<br>
+        \( \rho_{\text{material}} = (0.70 \times 10^3 \, \text{kg/m}^3) \times \frac{300 \, \text{N}}{100 \, \text{N}} \)<br>
+        \( \rho_{\text{material}} = (0.70 \times 10^3 \, \text{kg/m}^3) \times 3 \)<br>
+        \( \rho_{\text{material}} = 2.1 \times 10^3 \, \text{kg/m}^3 \)<br><br>
+
+        <strong>Final Answer:</strong><br>
+        The density of the unknown material is <span class="red-highlight">2.1 × 10³ kg/m³</span>.
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Moving Fluids and Bernoulli Equations</div>
+    <div class="subhead">Fluid Dynamics</div>
+
+    <h2>Categories of Fluids in Motion</h2>
+    <ul class="bullet-list">
+        <li><span class="blue-highlight">Steady vs. Non-steady</span> → flow velocity constant or changing with time</li>
+        <li><span class="blue-highlight">Compressible vs. Incompressible</span> → fluid density constant or variable</li>
+        <li><span class="blue-highlight">Viscous vs. Non-viscous</span> → internal friction present or absent</li>
+    </ul>
+
+    <h2>Steady Flow</h2>
+    <ul class="bullet-list">
+        <li>Velocity of fluid particles at any point is <span class="red-highlight">constant with time</span></li>
+        <li>Different parts of fluid may flow at different rates, but fluid in one location always flows at <span class="blue-highlight">same rate</span></li>
+        <li>Various layers slide smoothly past each other → called <span class="orange-highlight">streamline or laminar flow</span></li>
+        <li>Each particle passing a certain point follows the <span class="blue-highlight">same path</span> as particles that preceded it</li>
+        <li><span class="green-highlight">No loss of energy</span> due to internal friction</li>
+        <li>Velocity and pressure remain <span class="red-highlight">constant</span> at every point in the fluid</li>
+    </ul>
+
+    <h2>Turbulent Flow</h2>
+    <ul class="bullet-list">
+        <li>Occurs above a certain velocity → flow is <span class="red-highlight">not smooth</span></li>
+        <li><span class="blue-highlight">Irregular movement</span> of particles in a fluid</li>
+        <li>Results in <span class="orange-highlight">loss of energy</span> due to internal friction between neighboring layers → called <span class="red-highlight">viscosity</span></li>
+        <li>Speed of fluid at any point <span class="blue-highlight">continuously changes</span> in both magnitude and direction</li>
+    </ul>
+
+    <div class="image-figure">
+        <img src="turbulent_laminar_flow.png" alt="Comparison of turbulent and laminar flow" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Figure: Turbulent vs. Laminar Flow</div>
+        <div class="image-placeholder-note" style="display:none;">[turbulent_laminar_flow.png]</div>
+    </div>
+
+    <h2>Factors Affecting Laminar Flow</h2>
+    <ul class="bullet-list">
+        <li>Density</li>
+        <li>Compressibility</li>
+        <li>Temperature</li>
+        <li>Viscosity of the fluid</li>
+    </ul>
+
+    <h2>Assumptions for Ideal Fluid Flow</h2>
+    <ul class="bullet-list">
+        <li>Fluid is <span class="blue-highlight">non-viscous</span> → no internal friction between adjacent layers</li>
+        <li>Flow is <span class="red-highlight">steady</span> → velocity of fluid at each point remains constant</li>
+        <li>Fluid is <span class="orange-highlight">incompressible</span> → density of fluid is constant</li>
+        <li>Flow is <span class="green-highlight">irrotational</span> → fluid has no angular momentum about any point</li>
+    </ul>
+
+    <h2>Equation of Continuity</h2>
+    <ul class="bullet-list">
+        <li>Expresses <span class="blue-highlight">conservation of mass</span> for an incompressible fluid flowing in a tube</li>
+        <li>The amount (mass or volume) of fluid flowing through a cross section in a given time interval must be <span class="red-highlight">the same for all cross sections</span></li>
+        <li>The product of the area and the fluid speed at all points along a tube is <span class="orange-highlight">constant</span> for an incompressible fluid</li>
+    </ul>
+
+    <div class="math-block">
+        \( A v = A_1 v_1 = A_2 v_2 \)
+    </div>
+
+    <ul class="bullet-list">
+        <li>If cross-sectional area is <span class="blue-highlight">decreased</span> → flow rate <span class="red-highlight">increases</span></li>
+        <li><span class="blue-highlight">Example:</span> Holding finger over garden hose outlet → decreases area → water velocity increases</li>
+        <li>Product \( A v \) has dimensions of <span class="orange-highlight">volume per unit time</span> → called <span class="red-highlight">flow rate</span></li>
+    </ul>
+
+    <div class="math-block">
+        \( \text{Flow rate} = \frac{\text{volume}}{\text{time}} = A v = \text{constant} \)
+    </div>
+
+    <ul class="bullet-list">
+        <li>Condition \( A v = \text{constant} \) means volume of fluid entering one end of a tube in a given time interval <span class="blue-highlight">equals</span> volume leaving the other end (if no leaks)</li>
+    </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide">
+    <div class="slide-footer">© All Rights Reserved | Qeleme Exams App</div>
+    
+    <div class="slide-title">Bernoulli's Equation</div>
+    <div class="subhead">Relationship Between Velocity and Pressure in Fluids</div>
+
+    <h2>Bernoulli's Principle</h2>
+    <ul class="bullet-list">
+        <li>Derived by Swiss physicist <span class="blue-highlight">Daniel Bernoulli</span> in the 18th century</li>
+        <li><span class="red-highlight">Swiftly moving fluids exert less pressure than slowly moving fluids</span></li>
+    </ul>
+
+    <h2>Applications of Bernoulli's Principle</h2>
+    <ul class="bullet-list">
+        <li>Primary principle leading to <span class="blue-highlight">lift on an airplane wing</span> → allows plane to fly</li>
+        <li>Primary reason a <span class="orange-highlight">sailboat can sail into the wind</span></li>
+        <li>Primary reason a <span class="red-highlight">baseball can curve</span></li>
+        <li>Important reason that <span class="blue-highlight">smoke is drawn up a chimney</span></li>
+    </ul>
+
+    <h2>Bernoulli's Equation Derivation Concept</h2>
+    <ul class="bullet-list">
+        <li>Bernoulli's equation is a consequence of <span class="red-highlight">conservation of energy</span></li>
+        <li>Consider fluid moving through a pipe with:
+            <ul class="compact-list">
+                <li>Changing cross-sectional area</li>
+                <li>Changing elevation</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="image-figure">
+        <img src="bernoulli_pipe.png" alt="Fluid moving through pipe with varying cross-sectional area" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <div class="image-caption">Figure: A fluid moving with steady flow through a pipe with varying cross-sectional area</div>
+        <div class="image-placeholder-note" style="display:none;">[bernoulli_pipe.png]</div>
+    </div>
+
+    <ul class="bullet-list">
+        <li>At one point in the pipe:
+            <ul class="compact-list">
+                <li>Cross-sectional area → \(A_1\)</li>
+                <li>Height → \(y_1\)</li>
+                <li>Pressure → \(P_1\)</li>
+                <li>Velocity → \(v_1\)</li>
+                <li>Distance moved in time Δt → \(\Delta x_1\)</li>
+            </ul>
+        </li>
+        <li>At another point:
+            <ul class="compact-list">
+                <li>\(A_2\), \(y_2\), \(P_2\), \(v_2\), \(\Delta x_2\)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="math-block">
+        <strong>Bernoulli's Equation:</strong><br>
+        \( P + \frac{1}{2} \rho v^2 + \rho g y = \text{constant} \)
+    </div>
+
+    <div class="math-block">
+        \( P_1 + \frac{1}{2} \rho v_1^2 + \rho g y_1 = P_2 + \frac{1}{2} \rho v_2^2 + \rho g y_2 \)
+    </div>
+
+    <div class="callout">
+        <span class="blue-highlight">Example:</span> Water circulates throughout a house in a hot water heating system. If the water is pumped at a speed of 0.50 m/s through a 4.0 cm diameter pipe in the basement under a pressure of 3.03 × 10⁵ Pa, what will be the velocity and pressure in a 2.6 cm diameter pipe on the second floor 5.0 m above?<br><br>
+
+        <strong>Given:</strong><br>
+        Initial velocity: \( v_1 = 0.50 \, \text{m/s} \)<br>
+        Initial diameter: \( d_1 = 4.0 \, \text{cm} = 0.04 \, \text{m} \)<br>
+        Initial pressure: \( P_1 = 3.03 \times 10^5 \, \text{Pa} \)<br>
+        Initial height (basement): \( h_1 = 0 \, \text{m} \)<br>
+        Final diameter: \( d_2 = 2.6 \, \text{cm} = 0.026 \, \text{m} \)<br>
+        Final height (second floor): \( h_2 = 5.0 \, \text{m} \)<br>
+        Density of water: \( \rho = 1.0 \times 10^3 \, \text{kg/m}^3 \)<br>
+        Acceleration due to gravity: \( g = 9.80 \, \text{m/s}^2 \)<br>
+        Final velocity: \( v_2 = ? \)<br>
+        Final pressure: \( P_2 = ? \)<br><br>
+
+        <strong>Solution:</strong><br><br>
+
+        <strong>Step 1: Calculate the cross-sectional areas</strong><br>
+        \( A_1 = \pi r_1^2 = \pi \left(\frac{d_1}{2}\right)^2 = \pi \left(\frac{0.04}{2}\right)^2 = \pi (0.02)^2 = 0.0004\pi \, \text{m}^2 \)<br>
+        \( A_2 = \pi r_2^2 = \pi \left(\frac{d_2}{2}\right)^2 = \pi \left(\frac{0.026}{2}\right)^2 = \pi (0.013)^2 = 1.69 \times 10^{-4}\pi \, \text{m}^2 \)<br><br>
+
+        <strong>Step 2: Calculate the velocity v₂ using the continuity equation</strong><br>
+        From \( A_1 v_1 = A_2 v_2 \):<br>
+        \( v_2 = \frac{A_1 v_1}{A_2} = \frac{(0.0004\pi) \times 0.50}{1.69 \times 10^{-4}\pi} \)<br>
+        \( v_2 = \frac{0.0004 \times 0.50}{1.69 \times 10^{-4}} = \frac{0.0002}{0.000169} \)<br>
+        \( v_2 = 1.18 \, \text{m/s} \)<br><br>
+
+        <strong>Step 3: Apply Bernoulli's equation to find P₂</strong><br>
+        \( P_1 + \frac{1}{2} \rho v_1^2 + \rho g h_1 = P_2 + \frac{1}{2} \rho v_2^2 + \rho g h_2 \)<br><br>
+        Solve for \( P_2 \):<br>
+        \( P_2 = P_1 + \frac{1}{2} \rho v_1^2 + \rho g h_1 - \frac{1}{2} \rho v_2^2 - \rho g h_2 \)<br>
+        \( P_2 = P_1 + \frac{1}{2} \rho (v_1^2 - v_2^2) + \rho g (h_1 - h_2) \)<br><br>
+
+        <strong>Step 4: Substitute the values</strong><br>
+        \( P_2 = 3.03 \times 10^5 + \frac{1}{2}(1.0 \times 10^3)(0.50^2 - 1.18^2) + (1.0 \times 10^3)(9.80)(0 - 5.0) \)<br>
+        \( P_2 = 3.03 \times 10^5 + 500(0.25 - 1.3924) + 9800(-5.0) \)<br>
+        \( P_2 = 3.03 \times 10^5 + 500(-1.1424) - 49,000 \)<br>
+        \( P_2 = 3.03 \times 10^5 - 571.2 - 49,000 \)<br>
+        \( P_2 = 303,000 - 571.2 - 49,000 \)<br>
+        \( P_2 = 253,428.8 \, \text{Pa} \)<br>
+        \( P_2 = 2.53 \times 10^5 \, \text{Pa} \)<br><br>
+
+        <strong>Final Answer:</strong><br>
+        Velocity in the second floor pipe: \( v_2 = \boxed{1.18 \, \text{m/s}} \)<br>
+        Pressure in the second floor pipe: \( P_2 = \boxed{2.53 \times 10^5 \, \text{Pa}} \)
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof renderMathInElement !== 'undefined') {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
+    });
+</script>
+</body>
+</html>
